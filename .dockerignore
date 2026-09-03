@@ -1,0 +1,42 @@
+# Dependencies
+node_modules
+blog/node_modules
+web/node_modules
+
+# Build outputs (rebuilt in CI)
+blog/dist
+web/dist
+
+# Git
+.git
+.gitignore
+
+# Docs and media
+docs/
+*.png
+*.md
+!README.md
+
+# IDE
+.idea
+.vscode
+.DS_Store
+
+# Environment
+.env
+.env.*
+config/config.local.yaml
+
+# Frontend source (only need Go binary + migrations)
+blog/src
+web/src
+blog/public
+web/public
+blog/package*.json
+web/package*.json
+blog/vite.config.ts
+web/vite.config.ts
+blog/tsconfig*
+web/tsconfig*
+blog/index.html
+web/index.html

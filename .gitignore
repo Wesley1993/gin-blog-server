@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+blog/node_modules/
+web/node_modules/
+
+# Build outputs
+blog/dist/
+web/dist/
+bin/
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Environment files (contain secrets)
+.env
+.env.local
+.env.*.local
+config/config.local.yaml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Screenshots (project root level, not in docs/)
+/*.png
+
+# Docker
+deploy/bin/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Go
+vendor/
+
+# OS
+Thumbs.db

@@ -1,0 +1,5 @@
+-- 用户个人信息扩展：头像、个人简介
+-- 适用于 PostgreSQL 16
+
+ALTER TABLE sys_user ADD COLUMN IF NOT EXISTS avatar VARCHAR(255) DEFAULT '';
+ALTER TABLE sys_user ADD COLUMN IF NOT EXISTS bio VARCHAR(500) DEFAULT '';

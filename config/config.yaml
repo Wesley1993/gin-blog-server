@@ -1,0 +1,44 @@
+# Blog 后台管理系统配置文件
+# 所有配置项均可通过同名环境变量覆盖，环境变量优先级高于此文件
+app:
+  name: blog-admin # 应用名称
+  version: 0.0.1 # 应用版本号
+  mode: debug # 运行模式: debug / release / test
+  port: 3000 # HTTP服务监听端口
+database:
+  driver: postgres # 数据库驱动，当前仅支持postgres
+  host: 192.168.3.193 # 数据库主机地址
+  port: 5432 # 数据库端口
+  user: root # 数据库用户名
+  password: 123456 # 数据库密码
+  dbname: blog # 数据库名称
+  max_idle_conns: 10 # 最大空闲连接数
+  max_open_conns: 100 # 最大打开连接数
+  conn_max_lifetime: 3600 # 连接最大存活时间（秒）
+redis:
+  addr: 192.168.3.193:6379 # Redis地址，格式 host:port
+  password: "" # Redis密码，无密码留空
+  db: 1 # Redis数据库编号
+  pool_size: 10 # 连接池大小
+  min_idle_conns: 5 # 最小空闲连接数
+jwt:
+  secret: blog-jwt-secret-key # JWT签名密钥
+  expire: 24 # Token过期时间（小时）
+  prefix: blog_ # Token前缀标识
+swagger:
+  enabled: true # 是否启用Swagger文档
+  host: "" # 留空时自动使用当前访问域名；也可填写例如 localhost:3000
+  base_path: /api # API基础路径，需与路由前缀一致
+log:
+  level: info # 日志级别
+  file_path: "" # 日志文件路径
+  max_size: 100 # 单个日志文件最大大小（MB）
+  max_backups: 3 # 保留的旧日志文件最大数量
+migration:
+  dir: ./migrations
+elasticsearch:
+  addresses:
+    - "http://192.168.3.193:9200"
+  index_prefix: "blog"
+  username: ""
+  password: ""

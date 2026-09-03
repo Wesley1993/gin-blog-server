@@ -1,0 +1,243 @@
+/* ===== 全局基础样式：墨色纸感 ===== */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: #f4efe6;
+  color: #292521;
+  font-family:
+    'IBM Plex Sans',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'PingFang SC',
+    'Hiragino Sans GB',
+    'Microsoft YaHei',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 展示字体（标题/品牌） */
+.font-display {
+  font-family: 'Fraunces', 'Noto Serif SC', Georgia, 'Times New Roman', serif;
+}
+
+/* 纸纹噪点背景，用于登录页等大色块区域 */
+.paper-grain {
+  background-image:
+    radial-gradient(rgba(26, 24, 21, 0.045) 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+
+/* 滚动条微调 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d6cdbd;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Markdown 编辑器外层容器高度适配 */
+.md-editor-wrap .w-md-editor {
+  border-radius: 8px;
+}
+
+/* 4K/高分屏侧边栏适配：≥2560px 时加宽，保持与屏宽比例协调 */
+@media (min-width: 2560px) {
+  .admin-sider:not(.ant-layout-sider-collapsed) {
+    width: 260px !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
+    flex: 0 0 260px !important;
+  }
+}
+
+/* 侧边栏内部布局：品牌区固定顶部，菜单区独立滚动 */
+.admin-sider .ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ES 搜索高亮关键词 */
+em,
+.search-highlight em {
+  color: #b45309;
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* ===== 登录页动画 ===== */
+@keyframes loginFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes loginBrandFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes loginDecorLine {
+  from {
+    width: 0;
+  }
+  to {
+    width: 48px;
+  }
+}
+
+.login-form-enter {
+  animation: loginFadeInUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) both;
+  will-change: transform, opacity;
+}
+
+.login-brand-item {
+  animation: loginBrandFadeIn 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
+  will-change: transform, opacity;
+}
+
+.login-decor-line {
+  animation: loginDecorLine 1s 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+/* ===== 登录页 Ant Design 表单样式覆盖 ===== */
+.login-form .ant-input-affix-wrapper,
+.login-form .ant-input {
+  border-radius: 10px !important;
+  border-color: #d6cdbd !important;
+  background: rgba(255, 255, 255, 0.65) !important;
+  transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1) !important;
+  height: 48px !important;
+  font-size: 14px !important;
+}
+
+.login-form .ant-input-affix-wrapper:hover {
+  border-color: #c9a96e !important;
+}
+
+.login-form .ant-input-affix-wrapper:focus,
+.login-form .ant-input-affix-wrapper-focused,
+.login-form .ant-input:focus {
+  border-color: #b45309 !important;
+  box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.1) !important;
+}
+
+.login-form .ant-input-prefix {
+  margin-right: 10px !important;
+  color: #a69880 !important;
+  font-size: 16px !important;
+  transition: color 0.3s ease !important;
+}
+
+.login-form .ant-input-affix-wrapper-focused .ant-input-prefix {
+  color: #b45309 !important;
+}
+
+.login-form .ant-btn-primary {
+  border-radius: 10px !important;
+  height: 48px !important;
+  font-size: 15px !important;
+  letter-spacing: 0.25em !important;
+  background: linear-gradient(135deg, #b45309, #92400e) !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(180, 83, 9, 0.25) !important;
+  transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1) !important;
+}
+
+.login-form .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #d97706, #b45309) !important;
+  box-shadow: 0 6px 20px rgba(180, 83, 9, 0.35) !important;
+  transform: translateY(-1px) !important;
+}
+
+.login-form .ant-btn-primary:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 8px rgba(180, 83, 9, 0.2) !important;
+}
+
+.login-form .ant-checkbox-wrapper {
+  color: #6b6152 !important;
+  font-size: 13px !important;
+}
+
+.login-form .ant-checkbox .ant-checkbox-inner {
+  border-radius: 4px !important;
+  border-color: #c9bda6 !important;
+}
+
+.login-form .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #b45309 !important;
+  border-color: #b45309 !important;
+}
+
+.login-form .ant-input-password-icon {
+  color: #b9ac96 !important;
+  transition: color 0.3s ease !important;
+}
+
+.login-form .ant-input-password-icon:hover {
+  color: #b45309 !important;
+}
+
+/* ===== 仪表盘入场动画（错峰揭示） ===== */
+@keyframes dashReveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dash-reveal {
+  animation: dashReveal 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
+  will-change: transform, opacity;
+}
+
+/* 仪表盘统计卡片悬停微抬升 */
+.dash-stat-card {
+  transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.35s ease;
+}
+.dash-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(120, 86, 40, 0.12);
+}
+
+/* 健康状态呼吸圆点 */
+@keyframes dashPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(82, 196, 26, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(82, 196, 26, 0);
+  }
+}
+
+.dash-pulse-dot {
+  animation: dashPulse 2s ease-in-out infinite;
+}
