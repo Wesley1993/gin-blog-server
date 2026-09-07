@@ -10,8 +10,7 @@ pipeline {
 
     environment {
         DEPLOY_HOST = credentials('zblog-deploy-host')
-        DEPLOY_USER = 'deploy'
-        TAG         = "${env.BUILD_NUMBER}-${env.GIT_COMMIT?.take(7) ?: 'unknown'}"
+        DEPLOY_USER = 'root'
     }
 
     triggers {
@@ -80,24 +79,16 @@ pipeline {
             }
         }
 
-        stage('Package') {
-            steps {
-                sh '''
-                    docker build --platform linux/amd64 \
-                      -f deploy/Dockerfile.api \
-                      -t zblog-api:$TAG .
-                '''
-            }
-        }
-
         stage('Deploy') {
             steps {
                 sh '''
-                    # Ship image (no registry needed)
-                    docker save zblog-api:$TAG | gzip | \
-                      ssh -o StrictHostKeyChecking=accept-new \
-                          -o ServerAliveInterval=15 \
-                          $DEPLOY_USER@$DEPLOY_HOST "gunzip | docker load"
+                    # Ship binary
+                    rsync -az --progress bin/blog-server \
+                      $DEPLOY_USER@$DEPLOY_HOST:/opt/zblog/blog-server.new
+
+                    # Ship migrations
+                    rsync -az --delete migrations/ \
+                      $DEPLOY_USER@$DEPLOY_HOST:/opt/zblog/migrations/
 
                     # Sync frontend assets
                     rsync -az --delete blog/dist/ \
@@ -105,23 +96,29 @@ pipeline {
                     rsync -az --delete web/dist/ \
                       $DEPLOY_USER@$DEPLOY_HOST:/opt/zblog/www/admin/
 
+                    # Sync infra files
+                    rsync -az docker-compose.infra.yml \
+                      $DEPLOY_USER@$DEPLOY_HOST:/opt/zblog/docker-compose.infra.yml
+                    rsync -az nginx/conf.d/ \
+                      $DEPLOY_USER@$DEPLOY_HOST:/opt/zblog/nginx/conf.d/
+
                     # Activate
                     ssh $DEPLOY_USER@$DEPLOY_HOST "
                       set -e
                       cd /opt/zblog
-                      # Pre-deploy DB backup
-                      docker compose exec -T postgres pg_dump -U \${POSTGRES_USER:-appuser} -Fc \${POSTGRES_DB:-blog} > backup/pre_deploy_\\$(date +%F_%H%M).dump 2>/dev/null || true
-                      # Switch tag
-                      sed -i.bak \\"s/^TAG=.*/TAG=$TAG/\\" .env
-                      # Restart API
-                      docker compose up -d api
-                      # Reload Nginx
-                      docker compose exec nginx nginx -t 2>/dev/null
-                      docker compose exec nginx nginx -s reload
+                      # Pre-deploy backup
+                      pg_dump -h 127.0.0.1 -U \\${POSTGRES_USER:-appuser} -Fc \\${POSTGRES_DB:-blog} > backup/pre_deploy.dump 2>/dev/null || true
+                      # Swap binary
+                      [ -f blog-server ] && cp blog-server blog-server.old
+                      mv blog-server.new blog-server
+                      chmod +x blog-server
+                      # Restart
+                      sudo systemctl restart zblog
+                      # Reload nginx
+                      docker compose -f docker-compose.infra.yml exec nginx nginx -s reload || true
                       # Health check
-                      sleep 10
-                      docker compose exec -T api wget -qO- http://127.0.0.1:3000/health || exit 1
-                      curl -fsS http://127.0.0.1/health || exit 1
+                      sleep 5
+                      curl -fsS http://127.0.0.1:3000/health || exit 1
                     "
                 '''
             }
@@ -134,18 +131,17 @@ pipeline {
                 echo "Deployment failed - attempting rollback..."
                 ssh -o StrictHostKeyChecking=accept-new $DEPLOY_USER@$DEPLOY_HOST "
                   cd /opt/zblog
-                  if [ -f .env.bak ]; then
-                    cp .env.bak .env
-                    docker compose up -d api
+                  if [ -f blog-server.old ]; then
+                    mv blog-server.old blog-server
+                    sudo systemctl restart zblog
                     echo 'Rollback completed'
                   else
-                    echo 'No backup found, manual intervention required'
+                    echo 'No backup binary found, manual intervention required'
                   fi
                 " || echo "Rollback SSH failed - manual intervention required"
             '''
         }
         always {
-            sh 'docker rmi zblog-api:$TAG 2>/dev/null || true'
             sh 'rm -rf bin/'
             cleanWs(deleteDirs: true, notFailBuild: true)
         }

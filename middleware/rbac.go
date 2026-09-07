@@ -85,7 +85,8 @@ func RBACAuth(redisClient *pkgredis.RedisClient, roleRepo *repository.RoleReposi
 
 		if !hasPerm {
 			logger.Warn("权限校验失败", "userID", userID, "perm", requiredPerm)
-			response.Fail(c, http.StatusForbidden, errors.CodeForbidden, errors.GetMsg(errors.CodeForbidden))
+			// 显式下发中文提示，供前端拦截器统一展示「账号权限不足」
+			response.Fail(c, http.StatusForbidden, errors.CodeForbidden, "账号权限不足")
 			c.Abort()
 			return
 		}

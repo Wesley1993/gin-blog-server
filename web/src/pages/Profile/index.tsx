@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import { getProfile, updateProfile } from '../../api/profile';
 import { uploadToOss } from '../../api/upload';
 import { useAuth } from '../../store/useAuth';
+import { usePermission } from '../../hooks/usePermission';
 import type { Profile } from '../../api/types';
 
 /** 个人中心：查看与编辑当前登录用户的头像、昵称、简介 */
@@ -18,6 +19,10 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [avatar, setAvatar] = useState('');
   const patchUser = useAuth((s) => s.patchUser);
+  const { hasPerm } = usePermission();
+  // 保存个人信息需 profile:edit；更换头像会调用上传接口，需 upload:create
+  const canEditProfile = hasPerm('profile:edit');
+  const canUpload = hasPerm('upload:create');
 
   useEffect(() => {
     setLoading(true);
@@ -101,6 +106,7 @@ export default function ProfilePage() {
                     icon={<CameraOutlined />}
                     loading={uploading}
                     className="mt-3"
+                    disabled={!canUpload}
                   >
                     更换头像
                   </Button>
@@ -153,6 +159,7 @@ export default function ProfilePage() {
                     icon={<SaveOutlined />}
                     loading={saving}
                     onClick={handleSave}
+                    disabled={!canEditProfile}
                   >
                     保存个人信息
                   </Button>

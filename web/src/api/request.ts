@@ -44,6 +44,11 @@ request.interceptors.response.use(
       window.location.href = '/login';
       return Promise.reject(error);
     }
+    // 403：账号无对应操作权限，统一提示「账号权限不足」
+    if (error.response?.status === 403) {
+      message.error('账号权限不足');
+      return Promise.reject(error);
+    }
     const msg = error.response?.data?.msg || error.message || '网络异常';
     message.error(msg);
     return Promise.reject(error);

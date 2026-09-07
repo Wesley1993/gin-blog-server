@@ -16,6 +16,7 @@ type CreateArticleReq struct {
 	IsRepost     int16  `json:"is_repost"`     // 0原创 1转载
 	RepostURL    string `json:"repost_url"`    // 原文链接（转载时必填）
 	RepostAuthor string `json:"repost_author"` // 原作者
+	PublishedAt  string `json:"published_at"`  // 可选，格式 "2006-01-02 15:04:05"，未传则默认当前时间
 }
 
 // UpdateArticleReq 更新文章请求
@@ -30,6 +31,7 @@ type UpdateArticleReq struct {
 	IsRepost     int16  `json:"is_repost"`     // 0原创 1转载
 	RepostURL    string `json:"repost_url"`    // 原文链接（转载时必填）
 	RepostAuthor string `json:"repost_author"` // 原作者
+	PublishedAt  string `json:"published_at"`  // 可选，格式 "2006-01-02 15:04:05"，传了才更新
 }
 
 // ValidateRepost 校验转载字段：转载时原文链接必填，返回错误表示参数不合法

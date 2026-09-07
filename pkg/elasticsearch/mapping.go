@@ -14,7 +14,8 @@ const ArticleIndexMapping = `{
       "tags":        {"type": "keyword"},
       "category_id": {"type": "long"},
       "status":      {"type": "integer"},
-      "create_time": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||epoch_millis"}
+      "create_time": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||epoch_millis"},
+      "published_at": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss||epoch_millis"}
     }
   }
 }`

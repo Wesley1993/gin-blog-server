@@ -24,6 +24,7 @@ import {
   EditOutlined,
   LinkOutlined,
   DashboardOutlined,
+  HomeOutlined,
 } from "@ant-design/icons";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../store/useAuth";
@@ -32,6 +33,11 @@ import { logout as logoutApi } from "../../api/auth";
 import type { MenuItem } from "../../api/types";
 
 const { Sider, Header, Content } = Layout;
+
+/** 展示端（博客前台）访问地址：优先取环境变量，开发环境兜底 localhost:5174，生产兜底同源根路径 */
+const BLOG_URL =
+  import.meta.env.VITE_BLOG_URL ||
+  (import.meta.env.DEV ? "http://localhost:5174" : "/");
 
 type AntMenuItem = Required<MenuProps>["items"][number];
 
@@ -301,19 +307,32 @@ export default function MainLayout() {
               </span>
             </Space>
 
-            <Dropdown menu={userMenu} placement="bottomRight">
-              <Space className="cursor-pointer select-none" size="small">
-                <Avatar
-                  size={32}
-                  src={userInfo?.avatar || undefined}
-                  icon={<UserOutlined />}
-                  style={{ background: "#b45309" }}
-                />
-                <span className="font-medium">
-                  {userInfo?.nickname || userInfo?.username || "—"}
-                </span>
-              </Space>
-            </Dropdown>
+            <Space size="middle">
+              <Button
+                type="text"
+                icon={<HomeOutlined />}
+                onClick={() =>
+                  window.open(BLOG_URL, "_blank", "noopener,noreferrer")
+                }
+                className="!text-[#6d6357] hover:!text-[#b45309] hover:!bg-[#f4efe6]"
+              >
+                查看博客
+              </Button>
+
+              <Dropdown menu={userMenu} placement="bottomRight">
+                <Space className="cursor-pointer select-none" size="small">
+                  <Avatar
+                    size={32}
+                    src={userInfo?.avatar || undefined}
+                    icon={<UserOutlined />}
+                    style={{ background: "#b45309" }}
+                  />
+                  <span className="font-medium">
+                    {userInfo?.nickname || userInfo?.username || "—"}
+                  </span>
+                </Space>
+              </Dropdown>
+            </Space>
           </div>
         </Header>
 

@@ -77,7 +77,7 @@ export default function FeaturedArticles({ articles, categories }: Props) {
                 <div className="featured-body">
                   <div className="featured-kicker">
                     <span className="no">FEATURED · {String(i + 1).padStart(2, '0')} / {String(articles.length).padStart(2, '0')}</span>
-                    <span className="date">{formatDate(a.create_time)}</span>
+                    <span className="date">{formatDate(a.published_at || a.create_time)}</span>
                   </div>
                   <h3 className="featured-title">
                     {a.title}

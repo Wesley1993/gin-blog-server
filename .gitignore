@@ -7,6 +7,7 @@ web/node_modules/
 blog/dist/
 web/dist/
 bin/
+articles
 
 # TypeScript build info
 *.tsbuildinfo
@@ -16,6 +17,7 @@ bin/
 .env.local
 .env.*.local
 config/config.local.yaml
+config/config.yaml
 
 # IDE
 .idea/

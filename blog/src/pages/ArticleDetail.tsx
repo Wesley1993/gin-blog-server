@@ -162,7 +162,7 @@ export default function ArticleDetail() {
 
       <header className="article-head">
         <div className="meta">
-          <span>{formatDate(article.create_time)}</span>
+          <span>{formatDate(article.published_at || article.create_time)}</span>
           {catName && <span className="cat">◆ {catName}</span>}
           <span>预计阅读 {readingMinutes(article.content)} 分钟</span>
         </div>
@@ -216,7 +216,7 @@ export default function ArticleDetail() {
         >
           <span className="nav-dir">← 上一篇</span>
           <span className="nav-title">{prevArticle ? prevArticle.title : '已是最早一篇'}</span>
-          {prevArticle && <span className="nav-date mono">{formatDate(prevArticle.create_time)}</span>}
+          {prevArticle && <span className="nav-date mono">{formatDate(prevArticle.published_at || prevArticle.create_time)}</span>}
         </div>
         <div
           className={`article-nav-card right ${nextArticle ? '' : 'disabled'}`}
@@ -227,7 +227,7 @@ export default function ArticleDetail() {
         >
           <span className="nav-dir">下一篇 →</span>
           <span className="nav-title">{nextArticle ? nextArticle.title : '已是最新一篇'}</span>
-          {nextArticle && <span className="nav-date mono">{formatDate(nextArticle.create_time)}</span>}
+          {nextArticle && <span className="nav-date mono">{formatDate(nextArticle.published_at || nextArticle.create_time)}</span>}
         </div>
       </nav>
     </div>

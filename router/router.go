@@ -18,32 +18,46 @@ import (
 
 // writePermTable 写操作路由所需按钮权限标识声明表。
 // 键格式：METHOD + 空格 + FullPath（路由注册模式）。未收录的路由不设 perm，
-// RBACAuth 中间件对空 perm 默认放行（仅需登录）。
-// 站点配置保存、站点资料、常用网站写操作及索引重建等路由：种子数据中无对应按钮节点，
-// 暂不标注权限（保持放行），避免未配置按钮权限时锁死操作；后续按需补充种子后再标注。
+// RBACAuth 中间件对空 perm 默认放行（仅需登录），如登出、只读接口等对全体登录用户开放的操作。
+// 站点配置/站点资料/常用网站/个人信息/文件上传/索引重建等写操作均已登记权限标识，
+// 非超管用户须由角色 button_perms 显式授予，否则一律拒绝（如只读「测试」角色）。
 var writePermTable = map[string]string{
 	// 文章管理
-	"POST /api/article/create":   "article:add",
-	"PUT /api/article/update":    "article:edit",
-	"DELETE /api/article/:id":    "article:delete",
+	"POST /api/article/create":     "article:add",
+	"PUT /api/article/update":      "article:edit",
+	"DELETE /api/article/:id":      "article:delete",
+	"POST /api/article/es/rebuild": "article:rebuild",
 	// 分类管理
-	"POST /api/category/create":  "category:add",
-	"PUT /api/category/update":   "category:edit",
-	"DELETE /api/category/:id":   "category:delete",
+	"POST /api/category/create": "category:add",
+	"PUT /api/category/update":  "category:edit",
+	"DELETE /api/category/:id":  "category:delete",
 	// 用户管理
-	"POST /api/user/create":          "user:add",
-	"PUT /api/user/update":           "user:edit",
-	"DELETE /api/user/:id":           "user:delete",
-	"PUT /api/user/resetPwd/:id":     "user:resetPwd",
-	"PUT /api/user/status/:id":       "user:status",
+	"POST /api/user/create":      "user:add",
+	"PUT /api/user/update":       "user:edit",
+	"DELETE /api/user/:id":       "user:delete",
+	"PUT /api/user/resetPwd/:id": "user:resetPwd",
+	"PUT /api/user/status/:id":   "user:status",
 	// 角色管理
-	"POST /api/role/create":  "role:add",
-	"PUT /api/role/update":   "role:edit",
-	"DELETE /api/role/:id":   "role:delete",
+	"POST /api/role/create": "role:add",
+	"PUT /api/role/update":  "role:edit",
+	"DELETE /api/role/:id":  "role:delete",
 	// 菜单管理
-	"POST /api/menu/create":  "menu:add",
-	"PUT /api/menu/update":   "menu:edit",
-	"DELETE /api/menu/:id":   "menu:delete",
+	"POST /api/menu/create": "menu:add",
+	"PUT /api/menu/update":  "menu:edit",
+	"DELETE /api/menu/:id":  "menu:delete",
+	// 站点设置（基础配置保存 + OSS 保存/连通测试同属站点配置写操作）
+	"PUT /api/site/config":   "site:edit",
+	"POST /api/site/testOss": "site:edit",
+	// 站长个人资料（站点资料页）
+	"PUT /api/site/profile": "siteProfile:edit",
+	// 常用网站（友情链接）
+	"POST /api/site/links":       "link:add",
+	"PUT /api/site/links/:id":    "link:edit",
+	"DELETE /api/site/links/:id": "link:delete",
+	// 个人中心：修改当前登录用户自己的昵称/头像/简介
+	"PUT /api/profile/update": "profile:edit",
+	// 文件上传（文章封面、分类图片、头像等上传统一入口）
+	"POST /api/upload/oss": "upload:create",
 }
 
 // markPerm 权限标识前置中间件：按 METHOD+FullPath 从声明表查得所需权限写入 Context，

@@ -1,0 +1,25 @@
+name: zblog-infra
+
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "8088:80"              # NPM 代理到此端口，安全组不开 8088 即可
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./www/blog:/usr/share/nginx/blog:ro
+      - ./www/admin:/usr/share/nginx/admin:ro
+      - ./nginx/logs:/var/log/nginx
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # 允许容器访问宿主机 Go 进程
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

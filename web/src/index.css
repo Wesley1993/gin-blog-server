@@ -129,7 +129,7 @@ em,
   border-color: #d6cdbd !important;
   background: rgba(255, 255, 255, 0.65) !important;
   transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1) !important;
-  height: 48px !important;
+  height: 32px !important;
   font-size: 14px !important;
 }
 

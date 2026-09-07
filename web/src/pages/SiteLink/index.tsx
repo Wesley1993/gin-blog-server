@@ -23,11 +23,17 @@ import {
   updateSiteLink,
   deleteSiteLink,
 } from '../../api/siteLink';
+import { usePermission } from '../../hooks/usePermission';
 import type { SiteLink } from '../../api/types';
 
 /** 常用网站：展示端侧栏「常用网站」卡片的数据维护 */
 export default function SiteLinkPage() {
   const { message } = AntApp.useApp();
+  const { hasPerm } = usePermission();
+  // 常用网站的新增/编辑/删除及状态切换均需对应 link:* 权限
+  const canAdd = hasPerm('link:add');
+  const canEdit = hasPerm('link:edit');
+  const canDelete = hasPerm('link:delete');
   const [list, setList] = useState<SiteLink[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -165,26 +171,34 @@ export default function SiteLinkPage() {
       dataIndex: 'status',
       width: 100,
       render: (v: number, record) => (
-        <Switch checked={v === 1} onChange={(checked) => handleToggleStatus(record, checked)} />
+        <Switch checked={v === 1} onChange={(checked) => handleToggleStatus(record, checked)} disabled={!canEdit} />
       ),
     },
-    {
+  ];
+
+  // 无任何写权限时不渲染操作列，避免空操作栏
+  if (canEdit || canDelete) {
+    columns.push({
       title: '操作',
       width: 160,
       render: (_, record) => (
         <Space size="small">
-          <Button size="small" onClick={() => openEdit(record)}>
-            编辑
-          </Button>
-          <Popconfirm title="确认删除该常用网站？" onConfirm={() => handleDelete(record)}>
-            <Button size="small" danger>
-              删除
+          {canEdit && (
+            <Button size="small" onClick={() => openEdit(record)}>
+              编辑
             </Button>
-          </Popconfirm>
+          )}
+          {canDelete && (
+            <Popconfirm title="确认删除该常用网站？" onConfirm={() => handleDelete(record)}>
+              <Button size="small" danger>
+                删除
+              </Button>
+            </Popconfirm>
+          )}
         </Space>
       ),
-    },
-  ];
+    });
+  }
 
   return (
     <div className="page-container">
@@ -196,9 +210,11 @@ export default function SiteLinkPage() {
             <Button icon={<ReloadOutlined />} onClick={fetchList}>
               刷新
             </Button>
-            <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
-              新增网站
-            </Button>
+            {canAdd && (
+              <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
+                新增网站
+              </Button>
+            )}
           </Space>
         }
       />

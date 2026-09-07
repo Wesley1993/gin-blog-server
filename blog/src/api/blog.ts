@@ -17,6 +17,8 @@ export interface Article {
   repost_url?: string;
   /** 转载原作者 */
   repost_author?: string;
+  /** 发布时间（YYYY-MM-DD HH:mm:ss，旧数据可能为空） */
+  published_at?: string;
   create_time: string;
   update_time: string;
 }

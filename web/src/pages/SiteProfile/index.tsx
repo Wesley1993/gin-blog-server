@@ -29,6 +29,7 @@ import type { Dayjs } from 'dayjs';
 import PageHeader from '../../components/PageHeader';
 import { getSiteProfile, saveSiteProfile } from '../../api/siteProfile';
 import { uploadToOss } from '../../api/upload';
+import { usePermission } from '../../hooks/usePermission';
 import type { SiteProfile, SiteProfileProject, SiteProfileSkill } from '../../api/types';
 
 /** 表单内部结构：项目起止时间用 Dayjs 承载 */
@@ -53,6 +54,10 @@ interface ProfileFormValues {
 /** 个人资料：编辑展示端「关于页 / 联系站长」使用的站长资料 */
 export default function SiteProfilePage() {
   const { message } = AntApp.useApp();
+  const { hasPerm } = usePermission();
+  // 保存站长资料需 siteProfile:edit；更换头像会调用上传接口，需 upload:create
+  const canEditProfile = hasPerm('siteProfile:edit');
+  const canUpload = hasPerm('upload:create');
   const [form] = Form.useForm<ProfileFormValues>();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -173,7 +178,7 @@ export default function SiteProfilePage() {
                     beforeUpload={handleUpload}
                     fileList={[] as UploadFile[]}
                   >
-                    <Button size="small" icon={<CameraOutlined />} loading={uploading} className="mt-3">
+                    <Button size="small" icon={<CameraOutlined />} loading={uploading} className="mt-3" disabled={!canUpload}>
                       更换头像
                     </Button>
                   </Upload>
@@ -383,7 +388,7 @@ export default function SiteProfilePage() {
           <div className="flex justify-end">
             <Space>
               <span className="text-xs text-[#8a7f6f]">保存后展示端将同步更新</span>
-              <Button type="primary" size="large" icon={<SaveOutlined />} loading={saving} onClick={handleSave}>
+              <Button type="primary" size="large" icon={<SaveOutlined />} loading={saving} onClick={handleSave} disabled={!canEditProfile}>
                 保存个人资料
               </Button>
             </Space>

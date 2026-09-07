@@ -1,44 +1,52 @@
-# Blog 后台管理系统配置文件
-# 所有配置项均可通过同名环境变量覆盖，环境变量优先级高于此文件
+# Z-blog 生产环境配置模板
+# 复制为 config.yaml 并填入真实值，chmod 600
+# 此文件放置在 /opt/zblog/config.yaml，由宿主机上 systemd 管理的 Go 二进制直接读取
+
 app:
-  name: blog-admin # 应用名称
-  version: 0.0.1 # 应用版本号
-  mode: debug # 运行模式: debug / release / test
-  port: 3000 # HTTP服务监听端口
+  name: blog-admin
+  version: 0.0.1
+  mode: release
+  port: 3000
+
 database:
-  driver: postgres # 数据库驱动，当前仅支持postgres
-  host: 192.168.3.193 # 数据库主机地址
-  port: 5432 # 数据库端口
-  user: root # 数据库用户名
-  password: 123456 # 数据库密码
-  dbname: blog # 数据库名称
-  max_idle_conns: 10 # 最大空闲连接数
-  max_open_conns: 100 # 最大打开连接数
-  conn_max_lifetime: 3600 # 连接最大存活时间（秒）
+  driver: postgres
+  host: 127.0.0.1         # 服务器已有的 PostgreSQL
+  port: 5432
+  user: postgres          # 与 .env POSTGRES_USER 一致
+  password: wz@123     # 与 .env POSTGRES_PASSWORD 一致
+  dbname: zblog            # 与 .env POSTGRES_DB 一致
+  max_idle_conns: 5       # 2C4G 环境下调小
+  max_open_conns: 30      # 原 100 对 2C4G 过大
+  conn_max_lifetime: 1800
+
 redis:
-  addr: 192.168.3.193:6379 # Redis地址，格式 host:port
-  password: "" # Redis密码，无密码留空
-  db: 1 # Redis数据库编号
-  pool_size: 10 # 连接池大小
-  min_idle_conns: 5 # 最小空闲连接数
+  addr: 127.0.0.1:6379     # 服务器已有的 Redis
+  password: w123#abc     # 与 .env REDIS_PASSWORD 一致
+  db: 3
+  pool_size: 10
+  min_idle_conns: 2
+
 jwt:
-  secret: blog-jwt-secret-key # JWT签名密钥
-  expire: 24 # Token过期时间（小时）
-  prefix: blog_ # Token前缀标识
+  secret: 9cdd7903862f4cc4e54ff5b225b42abe2063214f21aec2aa070e6d9d9ca5b27d       # 必须替换！运行: openssl rand -hex 32
+  expire: 24
+  prefix: blog_
+
 swagger:
-  enabled: true # 是否启用Swagger文档
-  host: "" # 留空时自动使用当前访问域名；也可填写例如 localhost:3000
-  base_path: /api # API基础路径，需与路由前缀一致
+  enabled: false          # 生产必须关闭！
+  host: ""
+  base_path: /api
+
 log:
-  level: info # 日志级别
-  file_path: "" # 日志文件路径
-  max_size: 100 # 单个日志文件最大大小（MB）
-  max_backups: 3 # 保留的旧日志文件最大数量
+  level: info
+  file_path: ""           # 日志走 stdout，由 systemd journald 管理
+  max_size: 100
+  max_backups: 3
+
 migration:
-  dir: ./migrations
+  dir: ./migrations       # 相对于 systemd WorkingDirectory /opt/zblog
+
 elasticsearch:
-  addresses:
-    - "http://192.168.3.193:9200"
-  index_prefix: "blog"
+  addresses: ["http://es:9200"]  # 一期不部署 ES，连不上会自动降级
+  index_prefix: "zblog"
   username: ""
   password: ""

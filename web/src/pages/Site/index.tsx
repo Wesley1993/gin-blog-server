@@ -29,10 +29,14 @@ import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
 import PageHeader from '../../components/PageHeader';
 import { getSiteConfig, saveSiteConfig, testOss, getSiteStats } from '../../api/site';
+import { usePermission } from '../../hooks/usePermission';
 import type { SiteConfig, SiteStats } from '../../api/types';
 
 export default function SitePage() {
   const { message } = AntApp.useApp();
+  const { hasPerm } = usePermission();
+  // 站点基础配置与 OSS 配置的保存/连通测试均为站点配置写操作，需 site:edit
+  const canEditSite = hasPerm('site:edit');
   const [baseForm] = Form.useForm();
   const [ossForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -188,6 +192,7 @@ export default function SitePage() {
                           icon={<SaveOutlined />}
                           loading={savingBase}
                           onClick={saveBase}
+                          disabled={!canEditSite}
                         >
                           保存基础设置
                         </Button>
@@ -347,10 +352,11 @@ export default function SitePage() {
                             icon={<CloudServerOutlined />}
                             loading={savingOss}
                             onClick={saveOss}
+                            disabled={!canEditSite}
                           >
                             保存 OSS 设置
                           </Button>
-                          <Button icon={<ApiOutlined />} loading={testing} onClick={handleTest}>
+                          <Button icon={<ApiOutlined />} loading={testing} onClick={handleTest} disabled={!canEditSite}>
                             连通测试
                           </Button>
                         </Space>

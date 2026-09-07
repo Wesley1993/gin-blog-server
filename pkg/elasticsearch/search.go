@@ -9,12 +9,13 @@ import (
 
 // SearchResult 搜索结果单条
 type SearchResult struct {
-	ID         int64  `json:"id"`
-	Title      string `json:"title"`
-	Tags       string `json:"tags"`
-	CategoryID int64  `json:"category_id"`
-	Status     int    `json:"status"`
-	CreateTime string `json:"create_time"`
+	ID          int64  `json:"id"`
+	Title       string `json:"title"`
+	Tags        string `json:"tags"`
+	CategoryID  int64  `json:"category_id"`
+	Status      int    `json:"status"`
+	CreateTime  string `json:"create_time"`
+	PublishedAt string `json:"published_at"`
 }
 
 // SearchResponse 搜索结果
@@ -76,6 +77,7 @@ func (es *ESClient) search(keyword string, page, pageSize int, publishedOnly boo
 			"post_tags": []string{"</em>"},
 		},
 		"sort": []map[string]interface{}{
+			{"published_at": map[string]interface{}{"order": "desc"}},
 			{"create_time": map[string]interface{}{"order": "desc"}},
 		},
 		"from": from,
@@ -160,6 +162,9 @@ func (es *ESClient) search(keyword string, page, pageSize int, publishedOnly boo
 					}
 					if ct, ok := source["create_time"].(string); ok {
 						sr.CreateTime = ct
+					}
+					if pa, ok := source["published_at"].(string); ok {
+						sr.PublishedAt = pa
 					}
 				}
 

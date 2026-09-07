@@ -66,7 +66,7 @@ func (r *ArticleRepository) Page(page, pageSize int, categoryID int64, status in
 
 	var articles []model.Article
 	offset := (page - 1) * pageSize
-	if err := query.Order("create_time DESC").Offset(offset).Limit(pageSize).Find(&articles).Error; err != nil {
+	if err := query.Order("published_at DESC").Offset(offset).Limit(pageSize).Find(&articles).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -90,7 +90,7 @@ func (r *ArticleRepository) FindPublishedPage(page, pageSize int, categoryID int
 		query = query.Where("category_id = ?", categoryID)
 	}
 	if date != "" {
-		query = query.Where("TO_CHAR(create_time, 'YYYY-MM-DD') = ?", date)
+		query = query.Where("TO_CHAR(published_at, 'YYYY-MM-DD') = ?", date)
 	}
 	var total int64
 	if err := query.Count(&total).Error; err != nil {
@@ -99,8 +99,8 @@ func (r *ArticleRepository) FindPublishedPage(page, pageSize int, categoryID int
 
 	var articles []model.Article
 	offset := (page - 1) * pageSize
-	err := query.Select("id, title, category_id, cover, tags, status, is_repost, repost_url, repost_author, create_time, update_time").
-		Order("create_time DESC").Offset(offset).Limit(pageSize).Find(&articles).Error
+	err := query.Select("id, title, category_id, cover, tags, status, is_repost, repost_url, repost_author, published_at, create_time, update_time").
+		Order("published_at DESC").Offset(offset).Limit(pageSize).Find(&articles).Error
 	if err != nil {
 		return nil, 0, err
 	}
@@ -137,8 +137,8 @@ func (r *ArticleRepository) SearchPublishedByKeyword(keyword string, page, pageS
 
 	var articles []model.Article
 	offset := (page - 1) * pageSize
-	err := query.Select("id, title, category_id, cover, tags, status, is_repost, repost_url, repost_author, create_time, update_time").
-		Order("create_time DESC").Offset(offset).Limit(pageSize).Find(&articles).Error
+	err := query.Select("id, title, category_id, cover, tags, status, is_repost, repost_url, repost_author, published_at, create_time, update_time").
+		Order("published_at DESC").Offset(offset).Limit(pageSize).Find(&articles).Error
 	if err != nil {
 		return nil, 0, err
 	}
@@ -149,11 +149,11 @@ func (r *ArticleRepository) SearchPublishedByKeyword(keyword string, page, pageS
 // FindPublishedDates 查询指定年月内有已发布文章的日期列表（格式 YYYY-MM-DD，前台日历高亮使用）
 func (r *ArticleRepository) FindPublishedDates(year, month int) ([]string, error) {
 	var dates []string
-	sql := `SELECT DISTINCT TO_CHAR(create_time, 'YYYY-MM-DD')
+	sql := `SELECT DISTINCT TO_CHAR(published_at, 'YYYY-MM-DD')
 		FROM blog_article
 		WHERE is_deleted = 0 AND status = 1
-		  AND EXTRACT(YEAR FROM create_time) = ?
-		  AND EXTRACT(MONTH FROM create_time) = ?
+		  AND EXTRACT(YEAR FROM published_at) = ?
+		  AND EXTRACT(MONTH FROM published_at) = ?
 		ORDER BY 1`
 	if err := r.DB.Raw(sql, year, month).Scan(&dates).Error; err != nil {
 		return nil, err
@@ -189,7 +189,7 @@ func (r *ArticleRepository) SearchByKeyword(keyword string, page, pageSize int) 
 
 	var articles []model.Article
 	offset := (page - 1) * pageSize
-	if err := query.Order("create_time DESC").Offset(offset).Limit(pageSize).Find(&articles).Error; err != nil {
+	if err := query.Order("published_at DESC").Offset(offset).Limit(pageSize).Find(&articles).Error; err != nil {
 		return nil, 0, err
 	}
 

@@ -56,6 +56,7 @@ func (s *ArticleService) Create(userID int64, req dto.CreateArticleReq) error {
 		IsRepost:     req.IsRepost,
 		RepostURL:    req.RepostURL,
 		RepostAuthor: req.RepostAuthor,
+		PublishedAt:  parsePublishedAt(req.PublishedAt, now),
 		BaseModel: model.BaseModel{
 			CreateTime: now,
 			UpdateTime: now,
@@ -99,6 +100,12 @@ func (s *ArticleService) Update(req dto.UpdateArticleReq) error {
 	article.IsRepost = req.IsRepost
 	article.RepostURL = req.RepostURL
 	article.RepostAuthor = req.RepostAuthor
+	// published_at 传了才更新，不传保持原值
+	if req.PublishedAt != "" {
+		if t, err := time.ParseInLocation("2006-01-02 15:04:05", req.PublishedAt, time.Local); err == nil {
+			article.PublishedAt = &t
+		}
+	}
 	article.UpdateTime = time.Now()
 
 	if err := s.Repo.Update(article); err != nil {
@@ -168,10 +175,11 @@ func (s *ArticleService) PublicSearch(keyword string, page, pageSize int) ([]mod
 						ID:         item.ID,
 						CreateTime: parseTime(item.CreateTime),
 					},
-					Title:      item.Title,
-					Tags:       item.Tags,
-					CategoryID: item.CategoryID,
-					Status:     int16(item.Status),
+					Title:       item.Title,
+					Tags:        item.Tags,
+					CategoryID:  item.CategoryID,
+					Status:      int16(item.Status),
+					PublishedAt: parseTimePtr(item.PublishedAt),
 				})
 			}
 			return articles, result.Total, nil
@@ -194,10 +202,11 @@ func (s *ArticleService) SearchArticle(keyword string, page, pageSize int) ([]mo
 						ID:         item.ID,
 						CreateTime: parseTime(item.CreateTime),
 					},
-					Title:      item.Title,
-					Tags:       item.Tags,
-					CategoryID: item.CategoryID,
-					Status:     int16(item.Status),
+					Title:       item.Title,
+					Tags:        item.Tags,
+					CategoryID:  item.CategoryID,
+					Status:      int16(item.Status),
+					PublishedAt: parseTimePtr(item.PublishedAt),
 				})
 			}
 			return articles, result.Total, nil
@@ -224,4 +233,26 @@ func (s *ArticleService) RebuildIndex() (success, failed int, err error) {
 func parseTime(s string) time.Time {
 	t, _ := time.Parse("2006-01-02 15:04:05", s)
 	return t
+}
+
+// parsePublishedAt 解析请求中的发布时间字符串：为空或解析失败时回退到 fallback
+func parsePublishedAt(s string, fallback time.Time) *time.Time {
+	if s != "" {
+		if t, err := time.ParseInLocation("2006-01-02 15:04:05", s, time.Local); err == nil {
+			return &t
+		}
+	}
+	t := fallback
+	return &t
+}
+
+// parseTimePtr 解析 ES 返回的时间字符串为指针，空串或解析失败返回 nil
+func parseTimePtr(s string) *time.Time {
+	if s == "" {
+		return nil
+	}
+	if t, err := time.ParseInLocation("2006-01-02 15:04:05", s, time.Local); err == nil {
+		return &t
+	}
+	return nil
 }

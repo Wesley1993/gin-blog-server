@@ -29,6 +29,8 @@ export interface ArticleSaveParams {
   repost_url?: string;
   /** 原作者 */
   repost_author?: string;
+  /** 发布时间（YYYY-MM-DD HH:mm:ss，空字符串或不传表示使用默认当前时间） */
+  published_at?: string;
 }
 
 /** PG 分页列表 */

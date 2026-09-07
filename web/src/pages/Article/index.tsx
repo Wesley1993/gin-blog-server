@@ -23,14 +23,12 @@ import {
   rebuildIndex,
 } from '../../api/article';
 import { getCategoryTree } from '../../api/category';
-import { useAuth } from '../../store/useAuth';
 import { usePermission } from '../../hooks/usePermission';
 import type { ArticleItem, CategoryItem } from '../../api/types';
 
 export default function ArticlePage() {
   const { message, modal } = AntApp.useApp();
   const navigate = useNavigate();
-  const isSuper = useAuth((s) => s.isSuper);
   const { hasPerm } = usePermission();
 
   const [list, setList] = useState<ArticleItem[]>([]);
@@ -162,6 +160,18 @@ export default function ArticlePage() {
         v === 1 ? <Tag color="success">已发布</Tag> : <Tag color="warning">草稿</Tag>,
     },
     {
+      title: '发布时间',
+      dataIndex: 'published_at',
+      key: 'published_at',
+      width: 160,
+      render: (v: string | undefined, record) =>
+        v
+          ? dayjs(v).format('YYYY-MM-DD HH:mm')
+          : record.create_time
+            ? dayjs(record.create_time).format('YYYY-MM-DD HH:mm')
+            : '—',
+    },
+    {
       title: '创建时间',
       dataIndex: 'create_time',
       width: 170,
@@ -170,7 +180,7 @@ export default function ArticlePage() {
   ];
 
   // 无任一行内写权限时不渲染操作列，避免空操作栏；
-  // 重建索引按钮保持现有 isSuper 判定（后端接口未标注权限）
+  // 重建索引按钮由 article:rebuild 权限控制（后端已登记该写路由权限）
   if (canEdit || canDelete) {
     columns.push({
       title: '操作',
@@ -205,7 +215,7 @@ export default function ArticlePage() {
         subtitle="内容发布、全文检索与索引维护"
         extra={
           <Space>
-            {isSuper && (
+            {hasPerm('article:rebuild') && (
               <Button icon={<ThunderboltOutlined />} onClick={handleRebuild}>
                 重建索引
               </Button>

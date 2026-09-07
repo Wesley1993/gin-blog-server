@@ -49,7 +49,7 @@ export default function ArticleCard({ article, index, categories }: Props) {
 
       <div>
         <div className="toc-meta">
-          <span>{formatDate(article.create_time)}</span>
+          <span>{formatDate(article.published_at || article.create_time)}</span>
           {catName && <span className="cat">{catName}</span>}
           {article.is_repost === 1 && <span className="repost-mark">转载</span>}
         </div>

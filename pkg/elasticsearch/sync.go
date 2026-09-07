@@ -24,6 +24,9 @@ func (es *ESClient) SyncArticle(article *model.Article) error {
 		"status":      article.Status,
 		"create_time": article.CreateTime.Format("2006-01-02 15:04:05"),
 	}
+	if article.PublishedAt != nil {
+		doc["published_at"] = article.PublishedAt.Format("2006-01-02 15:04:05")
+	}
 
 	body, err := json.Marshal(doc)
 	if err != nil {
@@ -99,6 +102,9 @@ func (es *ESClient) RebuildIndex(articles []model.Article) (success, failed int,
 			"category_id": article.CategoryID,
 			"status":      article.Status,
 			"create_time": article.CreateTime.Format("2006-01-02 15:04:05"),
+		}
+		if article.PublishedAt != nil {
+			doc["published_at"] = article.PublishedAt.Format("2006-01-02 15:04:05")
 		}
 		docBytes, marshalErr := json.Marshal(doc)
 		if marshalErr != nil {

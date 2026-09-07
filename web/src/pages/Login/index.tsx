@@ -69,9 +69,9 @@ export default function Login() {
               className="w-11 h-11 flex items-center justify-center rounded-lg font-display text-xl"
               style={{ background: 'linear-gradient(135deg, #b45309, #7c2d12)' }}
             >
-              墨
+              Z
             </div>
-            <span className="tracking-[0.35em] text-sm text-[#c9bda6]">墨阁 · BLOG ADMIN</span>
+            <span className="tracking-[0.35em] text-sm text-[#c9bda6]">Z-blog · BLOG ADMIN</span>
           </div>
         </div>
 
@@ -113,77 +113,85 @@ export default function Login() {
 
       {/* 右侧表单区：暖纸底色 */}
       <div className="flex-1 flex items-center justify-center px-6 py-10 lg:p-8 paper-grain relative">
-        <div className="w-full max-w-[380px] login-form-enter">
-          {/* 小屏 Logo */}
-          <div className="lg:hidden mb-8 flex items-center gap-3">
-            <div
-              className="w-10 h-10 flex items-center justify-center rounded-lg font-display text-lg text-white"
-              style={{ background: 'linear-gradient(135deg, #b45309, #7c2d12)' }}
-            >
-              墨
-            </div>
-            <span className="font-display text-xl font-bold text-[#1a1815]">墨阁后台</span>
-          </div>
-
-          {/* 标题区 */}
-          <div className="mb-10">
-            <div className="text-xs tracking-[0.3em] text-[#b45309] mb-3 uppercase">Sign in</div>
-            <h2 className="font-display text-[34px] m-0 font-bold text-[#1a1815]">管理员登录</h2>
-            <p className="mt-3 text-sm text-[#8a7f6f] leading-relaxed">输入账号与密码，进入内容管理台。</p>
-          </div>
-
-          {/* 表单 */}
-          <Form
-            form={form}
-            name="login"
-            className="login-form"
-            size="large"
-            onFinish={onFinish}
-            autoComplete="new-password"
-            layout="vertical"
-          >
-            <Form.Item
-              name="username"
-              rules={[{ required: true, message: '请输入用户名' }]}
-              style={{ marginBottom: '20px' }}
-            >
-              <Input
-                prefix={<UserOutlined />}
-                placeholder="用户名"
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="password"
-              rules={[{ required: true, message: '请输入密码' }]}
-              style={{ marginBottom: '8px' }}
-            >
-              <Input.Password
-                prefix={<LockOutlined />}
-                placeholder="密码"
-              />
-            </Form.Item>
-
-            {/* 记住我 */}
-            <Form.Item name="remember" valuePropName="checked" style={{ marginBottom: '20px' }}>
-              <Checkbox>记住用户名</Checkbox>
-            </Form.Item>
-
-            <Form.Item className="mb-0">
-              <Button
-                type="primary"
-                htmlType="submit"
-                block
-                loading={loading}
-                className="font-medium"
+        {/* 外层负责光学居中位移：标题区高于底部版权区，整体上移才能让输入框重心落在视觉中心 */}
+        {/* 位移与入场动画分层，避免两者的 transform 互相覆盖 */}
+        <div className="w-full max-w-[380px] -translate-y-6 lg:-translate-y-10">
+          <div className="login-form-enter">
+            {/* 小屏 Logo */}
+            <div className="lg:hidden mb-8 flex items-center gap-3">
+              <div
+                className="w-10 h-10 flex items-center justify-center rounded-lg font-display text-lg text-white"
+                style={{ background: 'linear-gradient(135deg, #b45309, #7c2d12)' }}
               >
-                登 录
-              </Button>
-            </Form.Item>
-          </Form>
+                墨
+              </div>
+              <span className="font-display text-xl font-bold text-[#1a1815]">Z-blog后台</span>
+            </div>
 
-          <div className="mt-12 text-center text-xs tracking-[0.2em] text-[#b3a78f]">
-            © 2026 墨阁 · 仅限授权管理员访问
+            {/* 标题区 */}
+            <div className="mb-6">
+              <div className="text-xs tracking-[0.3em] text-[#b45309] mb-3 uppercase">Sign in</div>
+              <h2 className="font-display text-[34px] leading-[1.2] m-0 font-bold text-[#1a1815]">
+                管理员登录
+              </h2>
+              <p className="mt-2 text-sm text-[#8a7f6f] leading-relaxed">
+                输入账号与密码，进入内容管理台。
+              </p>
+            </div>
+
+            {/* 表单 */}
+            <Form
+              form={form}
+              name="login"
+              className="login-form"
+              size="large"
+              onFinish={onFinish}
+              autoComplete="new-password"
+              layout="vertical"
+            >
+              <Form.Item
+                name="username"
+                rules={[{ required: true, message: '请输入用户名' }]}
+                style={{ marginBottom: '20px' }}
+              >
+                <Input
+                  prefix={<UserOutlined />}
+                  placeholder="用户名"
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="password"
+                rules={[{ required: true, message: '请输入密码' }]}
+                style={{ marginBottom: '8px' }}
+              >
+                <Input.Password
+                  prefix={<LockOutlined />}
+                  placeholder="密码"
+                />
+              </Form.Item>
+
+              {/* 记住我 */}
+              <Form.Item name="remember" valuePropName="checked" style={{ marginBottom: '20px' }}>
+                <Checkbox>记住用户名</Checkbox>
+              </Form.Item>
+
+              <Form.Item className="mb-0">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  block
+                  loading={loading}
+                  className="font-medium"
+                >
+                  登 录
+                </Button>
+              </Form.Item>
+            </Form>
+
+            <div className="mt-8 text-center text-xs tracking-[0.2em] text-[#b3a78f]">
+              © 2026 wuzhispace.com · 仅限授权管理员访问
+            </div>
           </div>
         </div>
       </div>

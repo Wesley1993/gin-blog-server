@@ -9,11 +9,14 @@ import {
   Segmented,
   Spin,
   Switch,
+  DatePicker,
   App as AntApp,
 } from 'antd';
 import type { UploadProps } from 'antd';
 import { ArrowLeftOutlined, SaveOutlined, PictureOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
+import dayjs from 'dayjs';
+import type { Dayjs } from 'dayjs';
 import MDEditor from '@uiw/react-md-editor';
 import PageHeader from '../../components/PageHeader';
 import { getArticleById, createArticle, updateArticle } from '../../api/article';
@@ -39,6 +42,7 @@ export default function ArticleEdit() {
   const [isRepost, setIsRepost] = useState(false);
   const [repostUrl, setRepostUrl] = useState('');
   const [repostAuthor, setRepostAuthor] = useState('');
+  const [publishedAt, setPublishedAt] = useState<Dayjs | null>(null);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
 
   // 编辑器高度随视口自适应，高分屏下充分利用纵向空间（最小 520）
@@ -73,6 +77,9 @@ export default function ArticleEdit() {
         setIsRepost(article.is_repost === 1);
         setRepostUrl(article.repost_url ?? '');
         setRepostAuthor(article.repost_author ?? '');
+        if (article.published_at) {
+          setPublishedAt(dayjs(article.published_at));
+        }
       })
       .catch(() => {
         message.error('文章加载失败');
@@ -136,6 +143,7 @@ export default function ArticleEdit() {
         is_repost: isRepost ? 1 : 0,
         repost_url: isRepost ? repostUrl.trim() : '',
         repost_author: isRepost ? repostAuthor.trim() : '',
+        published_at: publishedAt ? publishedAt.format('YYYY-MM-DD HH:mm:ss') : '',
       };
       if (articleId) {
         await updateArticle({ ...payload, id: articleId });
@@ -215,6 +223,17 @@ export default function ArticleEdit() {
                     { label: '草稿', value: 0 },
                     { label: '发布', value: 1 },
                   ]}
+                />
+              </div>
+              <div>
+                <div className="text-xs text-[#8a7f6f] mb-1.5 tracking-wide">发布时间</div>
+                <DatePicker
+                  showTime
+                  value={publishedAt}
+                  onChange={(val) => setPublishedAt(val)}
+                  format="YYYY-MM-DD HH:mm:ss"
+                  placeholder="默认当前时间"
+                  style={{ width: '100%' }}
                 />
               </div>
               <div className="md:col-span-3">
