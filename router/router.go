@@ -144,6 +144,8 @@ func SetupRouter(
 			// 认证
 			authorized.POST("/auth/logout", authHandler.Logout)
 			authorized.GET("/auth/userinfo", authHandler.GetUserInfo)
+			// 当前登录用户自助修改密码（仅需登录，不登记 writePermTable，只读角色也可改自己密码；复用登录限流防止原密码被在线暴力猜测）
+			authorized.PUT("/user/password", middleware.RateLimit(redisClient), authHandler.ChangePassword)
 
 			// 菜单
 			menu := authorized.Group("/menu")

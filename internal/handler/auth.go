@@ -70,6 +70,46 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 	response.Success(c)
 }
 
+// ChangePassword 当前登录用户自助修改密码
+// @Summary 修改密码
+// @Description 校验原密码后修改当前登录用户密码，成功后强制下线
+// @Tags 认证
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body dto.ChangePwdReq true "修改密码参数"
+// @Success 200 {object} response.Response
+// @Router /api/user/password [put]
+func (h *AuthHandler) ChangePassword(c *gin.Context) {
+	userIDVal, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, errors.CodeUnauthorized, errors.GetMsg(errors.CodeUnauthorized))
+		return
+	}
+	uid, ok := userIDVal.(int64)
+	if !ok {
+		response.Fail(c, 401, errors.CodeUnauthorized, errors.GetMsg(errors.CodeUnauthorized))
+		return
+	}
+
+	var req dto.ChangePwdReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Fail(c, 400, errors.CodeBadRequest, errors.GetMsg(errors.CodeBadRequest))
+		return
+	}
+
+	if err := h.authService.ChangePassword(uid, req); err != nil {
+		errCode, _ := strconv.Atoi(err.Error())
+		if errCode == 0 {
+			errCode = errors.CodeServerError
+		}
+		response.Fail(c, 200, errCode, errors.GetMsg(errCode))
+		return
+	}
+
+	response.Success(c)
+}
+
 // GetUserInfo 获取当前用户信息
 // @Summary 获取用户信息
 // @Description 返回当前用户信息、菜单树、权限标识

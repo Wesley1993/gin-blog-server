@@ -495,6 +495,44 @@
                 }
             }
         },
+        "/api/menu/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RBAC权限"
+                ],
+                "summary": "创建菜单",
+                "parameters": [
+                    {
+                        "description": "菜单信息",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateMenuReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/menu/list": {
             "get": {
                 "security": [
@@ -509,6 +547,408 @@
                     "RBAC权限"
                 ],
                 "summary": "获取全部菜单树",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/menu/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RBAC权限"
+                ],
+                "summary": "更新菜单",
+                "parameters": [
+                    {
+                        "description": "菜单信息",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateMenuReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/menu/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RBAC权限"
+                ],
+                "summary": "删除菜单",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "菜单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/profile/info": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "返回当前登录用户的昵称、头像、个人简介等信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "个人信息"
+                ],
+                "summary": "获取个人信息",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ProfileDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/profile/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "更新当前登录用户的昵称、头像、个人简介，更新后清除用户缓存",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "个人信息"
+                ],
+                "summary": "更新个人信息",
+                "parameters": [
+                    {
+                        "description": "个人信息",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateProfileReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ProfileDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/article/dates": {
+            "get": {
+                "description": "博客前台公开接口，返回指定年月内有已发布文章的日期列表（YYYY-MM-DD）",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "博客公开接口"
+                ],
+                "summary": "前台文章发布日历（指定年月）",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "年份",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "月份 1-12",
+                        "name": "month",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/article/es/search": {
+            "get": {
+                "description": "博客前台公开接口，仅搜索已发布文章，ES 不可用时降级 PG LIKE",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "博客公开接口"
+                ],
+                "summary": "前台ES全文搜索（仅已发布）",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "搜索关键词",
+                        "name": "keyword",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "每页条数",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/article/page": {
+            "get": {
+                "description": "博客前台公开接口，返回列表不包含 content 字段，节省带宽",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "博客公开接口"
+                ],
+                "summary": "前台文章分页列表（仅已发布）",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "每页条数",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "分类ID",
+                        "name": "category_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "发布日期（YYYY-MM-DD）",
+                        "name": "date",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/article/{id}": {
+            "get": {
+                "description": "博客前台公开接口，根据 ID 获取已发布文章详情（含 content）",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "博客公开接口"
+                ],
+                "summary": "前台文章详情（仅已发布）",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "文章ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/links": {
+            "get": {
+                "description": "博客前台公开接口，仅返回启用中的记录，按 sort 升序、id 升序",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "博客公开接口"
+                ],
+                "summary": "获取常用网站列表",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.SiteLinkItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/profile": {
+            "get": {
+                "description": "博客前台公开接口，用于「关于页」与「联系站长」展示，表为空时返回空默认值",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "博客公开接口"
+                ],
+                "summary": "获取站长个人资料",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.SiteProfileResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/site/config": {
+            "get": {
+                "description": "博客前台公开接口，仅返回 site_name、site_desc、copyright、founded_at、icp、police_icp",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "博客公开接口"
+                ],
+                "summary": "获取站点公开配置",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -712,6 +1152,266 @@
                 }
             }
         },
+        "/api/site/links": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "站点管理"
+                ],
+                "summary": "获取全部常用网站",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.SiteLink"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "站点管理"
+                ],
+                "summary": "新增常用网站",
+                "parameters": [
+                    {
+                        "description": "常用网站信息",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateSiteLinkReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/site/links/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "站点管理"
+                ],
+                "summary": "更新常用网站",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "常用网站ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "常用网站信息",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateSiteLinkReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "站点管理"
+                ],
+                "summary": "删除常用网站",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "常用网站ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/site/profile": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "站点管理"
+                ],
+                "summary": "获取站长个人资料",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.SiteProfileResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "站点管理"
+                ],
+                "summary": "保存站长个人资料",
+                "parameters": [
+                    {
+                        "description": "站长个人资料",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SaveSiteProfileReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/site/stats": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "返回建站日期、运行天数、文章总数、分类数、用户数，运行天数由后端根据 founded_at 计算",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "站点管理"
+                ],
+                "summary": "获取站点运行统计信息",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.SiteStatsResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/site/testOss": {
             "post": {
                 "security": [
@@ -731,6 +1431,43 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/system/overview": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "返回应用版本、Go 运行时、内存、运行时长及 DB/Redis/ES 健康状态",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统管理"
+                ],
+                "summary": "获取系统运行概览",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/service.SystemOverview"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -850,6 +1587,45 @@
                 }
             }
         },
+        "/api/user/password": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "校验原密码后修改当前登录用户密码，成功后强制下线",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "认证"
+                ],
+                "summary": "修改密码",
+                "parameters": [
+                    {
+                        "description": "修改密码参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ChangePwdReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/resetPwd/{id}": {
             "put": {
                 "security": [
@@ -882,6 +1658,51 @@
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/dto.ResetPwdReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/status/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "启停用用户",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "目标状态",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateUserStatusReq"
                         }
                     }
                 ],
@@ -968,6 +1789,23 @@
         }
     },
     "definitions": {
+        "dto.ChangePwdReq": {
+            "type": "object",
+            "required": [
+                "new_password",
+                "old_password"
+            ],
+            "properties": {
+                "new_password": {
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 6
+                },
+                "old_password": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateArticleReq": {
             "type": "object",
             "required": [
@@ -983,6 +1821,22 @@
                     "type": "string"
                 },
                 "cover": {
+                    "type": "string"
+                },
+                "is_repost": {
+                    "description": "0原创 1转载",
+                    "type": "integer"
+                },
+                "published_at": {
+                    "description": "可选，格式 \"2006-01-02 15:04:05\"，未传则默认当前时间",
+                    "type": "string"
+                },
+                "repost_author": {
+                    "description": "原作者",
+                    "type": "string"
+                },
+                "repost_url": {
+                    "description": "原文链接（转载时必填）",
                     "type": "string"
                 },
                 "status": {
@@ -1002,11 +1856,50 @@
                 "name"
             ],
             "properties": {
+                "image": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
                 "parent_id": {
                     "type": "integer"
+                },
+                "sort": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.CreateMenuReq": {
+            "type": "object",
+            "required": [
+                "menu_name",
+                "menu_type"
+            ],
+            "properties": {
+                "menu_name": {
+                    "type": "string"
+                },
+                "menu_type": {
+                    "description": "1目录 2页面 3按钮",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                "parent_id": {
+                    "type": "integer"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "perms": {
+                    "type": "string"
                 },
                 "sort": {
                     "type": "integer"
@@ -1037,6 +1930,33 @@
                     }
                 },
                 "role_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateSiteLinkReq": {
+            "type": "object",
+            "required": [
+                "name",
+                "url"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "url": {
                     "type": "string"
                 }
             }
@@ -1089,6 +2009,29 @@
                 }
             }
         },
+        "dto.ProfileDTO": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "bio": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.ResetPwdReq": {
             "type": "object",
             "required": [
@@ -1097,6 +2040,203 @@
             "properties": {
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.SaveSiteProfileReq": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "bio": {
+                    "type": "string"
+                },
+                "contacts": {
+                    "$ref": "#/definitions/dto.SiteProfileContact"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.SiteProfileProject"
+                    }
+                },
+                "skills": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.SiteProfileSkill"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SiteLinkItem": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SiteProfileContact": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "github": {
+                    "description": "GitHub 地址",
+                    "type": "string"
+                },
+                "qq": {
+                    "description": "QQ 号",
+                    "type": "string"
+                },
+                "wechat": {
+                    "description": "微信号",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SiteProfileProject": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "description": "项目描述",
+                    "type": "string"
+                },
+                "end": {
+                    "description": "结束时间，空表示至今",
+                    "type": "string"
+                },
+                "link": {
+                    "description": "项目链接",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "项目名称",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "开始时间 如 2026-01",
+                    "type": "string"
+                },
+                "tech": {
+                    "description": "技术栈",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "dto.SiteProfileResp": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "description": "头像",
+                    "type": "string"
+                },
+                "bio": {
+                    "description": "个人简历/自序",
+                    "type": "string"
+                },
+                "contacts": {
+                    "description": "联系方式",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/dto.SiteProfileContact"
+                        }
+                    ]
+                },
+                "name": {
+                    "description": "站长姓名",
+                    "type": "string"
+                },
+                "projects": {
+                    "description": "项目经历列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.SiteProfileProject"
+                    }
+                },
+                "skills": {
+                    "description": "技能列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.SiteProfileSkill"
+                    }
+                },
+                "title": {
+                    "description": "头衔/一句话介绍",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SiteProfileSkill": {
+            "type": "object",
+            "properties": {
+                "group": {
+                    "description": "分组（如 后端/前端/工程化）",
+                    "type": "string"
+                },
+                "level": {
+                    "description": "熟练度 0-100",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "技能名称",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SiteStatsResp": {
+            "type": "object",
+            "properties": {
+                "article_count": {
+                    "description": "文章总数（未删除）",
+                    "type": "integer"
+                },
+                "category_count": {
+                    "description": "分类数",
+                    "type": "integer"
+                },
+                "founded_at": {
+                    "description": "建站日期",
+                    "type": "string"
+                },
+                "running_days": {
+                    "description": "运行天数",
+                    "type": "integer"
+                },
+                "user_count": {
+                    "description": "用户数",
+                    "type": "integer"
                 }
             }
         },
@@ -1121,6 +2261,22 @@
                 "id": {
                     "type": "integer"
                 },
+                "is_repost": {
+                    "description": "0原创 1转载",
+                    "type": "integer"
+                },
+                "published_at": {
+                    "description": "可选，格式 \"2006-01-02 15:04:05\"，传了才更新",
+                    "type": "string"
+                },
+                "repost_author": {
+                    "description": "原作者",
+                    "type": "string"
+                },
+                "repost_url": {
+                    "description": "原文链接（转载时必填）",
+                    "type": "string"
+                },
                 "status": {
                     "type": "integer"
                 },
@@ -1142,6 +2298,9 @@
                 "id": {
                     "type": "integer"
                 },
+                "image": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -1153,6 +2312,52 @@
                 },
                 "status": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.UpdateMenuReq": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "menu_name": {
+                    "type": "string"
+                },
+                "menu_type": {
+                    "type": "integer"
+                },
+                "parent_id": {
+                    "type": "integer"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "perms": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.UpdateProfileReq": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "bio": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
                 }
             }
         },
@@ -1185,6 +2390,33 @@
                 }
             }
         },
+        "dto.UpdateSiteLinkReq": {
+            "type": "object",
+            "required": [
+                "name",
+                "url"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UpdateUserReq": {
             "type": "object",
             "required": [
@@ -1205,9 +2437,20 @@
                 }
             }
         },
+        "dto.UpdateUserStatusReq": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.UserDTO": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -1248,6 +2491,12 @@
                 "copyright": {
                     "type": "string"
                 },
+                "founded_at": {
+                    "type": "string"
+                },
+                "icp": {
+                    "type": "string"
+                },
                 "oss_access_key": {
                     "type": "string"
                 },
@@ -1260,7 +2509,19 @@
                 "oss_endpoint": {
                     "type": "string"
                 },
+                "oss_insecure": {
+                    "type": "integer"
+                },
+                "oss_provider": {
+                    "type": "string"
+                },
+                "oss_region": {
+                    "type": "string"
+                },
                 "oss_secret_key": {
+                    "type": "string"
+                },
+                "police_icp": {
                     "type": "string"
                 },
                 "site_desc": {
@@ -1313,6 +2574,44 @@
                 }
             }
         },
+        "model.SiteLink": {
+            "type": "object",
+            "properties": {
+                "create_time": {
+                    "type": "string"
+                },
+                "description": {
+                    "description": "可选描述",
+                    "type": "string"
+                },
+                "icon": {
+                    "description": "图标图片 URL",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "网站名称",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序，小靠前",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "1 启用 0 停用",
+                    "type": "integer"
+                },
+                "update_time": {
+                    "type": "string"
+                },
+                "url": {
+                    "description": "链接地址",
+                    "type": "string"
+                }
+            }
+        },
         "response.Response": {
             "type": "object",
             "properties": {
@@ -1325,6 +2624,41 @@
                 },
                 "msg": {
                     "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        },
+        "service.SystemOverview": {
+            "type": "object",
+            "properties": {
+                "app_mode": {
+                    "type": "string"
+                },
+                "app_name": {
+                    "type": "string"
+                },
+                "app_version": {
+                    "type": "string"
+                },
+                "db_status": {
+                    "type": "string"
+                },
+                "es_status": {
+                    "type": "string"
+                },
+                "go_version": {
+                    "type": "string"
+                },
+                "goroutines": {
+                    "type": "integer"
+                },
+                "mem_alloc_mb": {
+                    "type": "integer"
+                },
+                "redis_status": {
+                    "type": "string"
+                },
+                "uptime": {
                     "type": "string"
                 }
             }

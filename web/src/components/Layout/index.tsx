@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   Layout,
   Menu,
@@ -7,6 +7,9 @@ import {
   Button,
   Space,
   App as AntApp,
+  Modal,
+  Form,
+  Input,
 } from "antd";
 import type { MenuProps } from "antd";
 import {
@@ -15,6 +18,7 @@ import {
   UserOutlined,
   LogoutOutlined,
   IdcardOutlined,
+  KeyOutlined,
   FileTextOutlined,
   AppstoreOutlined,
   TeamOutlined,
@@ -29,7 +33,7 @@ import {
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../store/useAuth";
 import { useMenu } from "../../store/useMenu";
-import { logout as logoutApi } from "../../api/auth";
+import { logout as logoutApi, changePassword } from "../../api/auth";
 import type { MenuItem } from "../../api/types";
 
 const { Sider, Header, Content } = Layout;
@@ -184,6 +188,9 @@ export default function MainLayout() {
   const doLogout = useAuth((s) => s.logout);
   const collapsed = useMenu((s) => s.collapsed);
   const toggleCollapsed = useMenu((s) => s.toggleCollapsed);
+  const [pwdOpen, setPwdOpen] = useState(false);
+  const [pwdLoading, setPwdLoading] = useState(false);
+  const [pwdForm] = Form.useForm();
 
   const menuItems = useMemo(() => {
     const source = menus && menus.length > 0 ? menus : fallbackMenus;
@@ -229,6 +236,38 @@ export default function MainLayout() {
     navigate("/login");
   };
 
+  // 关闭弹窗同时重置表单，避免 destroyOnHidden 不清理外部 form store 导致明文密码残留
+  const closePwdModal = () => {
+    setPwdOpen(false);
+    pwdForm.resetFields();
+  };
+
+  const handleChangePwd = async () => {
+    let values;
+    try {
+      values = await pwdForm.validateFields();
+    } catch {
+      // 校验未通过，字段错误提示由 Form 自动显示
+      return;
+    }
+    setPwdLoading(true);
+    try {
+      await changePassword({
+        old_password: values.old_password,
+        new_password: values.new_password,
+      });
+      // 改密成功后后端已删除 token 强制下线：先提示并关闭/重置弹窗，再清登录态跳转登录页（无需再调 logoutApi）
+      message.success("密码修改成功，请重新登录");
+      closePwdModal();
+      doLogout();
+      navigate("/login");
+    } catch {
+      // 拦截器已统一提示错误（如原密码错误）
+    } finally {
+      setPwdLoading(false);
+    }
+  };
+
   const userMenu: MenuProps = {
     items: [
       {
@@ -236,6 +275,12 @@ export default function MainLayout() {
         icon: <IdcardOutlined />,
         label: "个人中心",
         onClick: () => navigate("/profile"),
+      },
+      {
+        key: "changePwd",
+        icon: <KeyOutlined />,
+        label: "修改密码",
+        onClick: () => setPwdOpen(true),
       },
       { type: "divider" },
       {
@@ -340,6 +385,64 @@ export default function MainLayout() {
           <Outlet />
         </Content>
       </Layout>
+
+      <Modal
+        title="修改密码"
+        open={pwdOpen}
+        onOk={handleChangePwd}
+        onCancel={closePwdModal}
+        okText="确认修改"
+        cancelText="取消"
+        confirmLoading={pwdLoading}
+        destroyOnHidden
+      >
+        <Form form={pwdForm} layout="vertical" className="mt-4">
+          <Form.Item
+            name="old_password"
+            label="原密码"
+            rules={[{ required: true, message: "请输入原密码" }]}
+          >
+            <Input.Password
+              placeholder="请输入原密码"
+              autoComplete="current-password"
+            />
+          </Form.Item>
+          <Form.Item
+            name="new_password"
+            label="新密码"
+            rules={[
+              { required: true, message: "请输入新密码" },
+              { min: 6, max: 32, message: "密码长度为 6-32 位" },
+            ]}
+          >
+            <Input.Password
+              placeholder="请输入新密码（至少 6 位）"
+              autoComplete="new-password"
+            />
+          </Form.Item>
+          <Form.Item
+            name="confirm_password"
+            label="确认新密码"
+            dependencies={["new_password"]}
+            rules={[
+              { required: true, message: "请再次输入新密码" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("new_password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error("两次输入的密码不一致"));
+                },
+              }),
+            ]}
+          >
+            <Input.Password
+              placeholder="请再次输入新密码"
+              autoComplete="new-password"
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </Layout>
   );
 }

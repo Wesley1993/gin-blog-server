@@ -12,12 +12,14 @@ const (
 
 // 业务错误码
 const (
-	// 用户/认证 10001-10005
+	// 用户/认证 10001-10007
 	ErrUsernameExists  = 10001
 	ErrRoleNotFound    = 10002
 	ErrSuperAdminDel   = 10003
 	ErrAccountDisabled = 10004
 	ErrLoginFailed     = 10005
+	ErrOldPwdIncorrect = 10006
+	ErrPwdSame         = 10007
 
 	// 分类 20001-20002
 	ErrCategoryNotFound = 20001
@@ -57,6 +59,8 @@ var codeMessages = map[int]string{
 	ErrSuperAdminDel:      "超级管理员不可删除",
 	ErrAccountDisabled:    "账号已禁用",
 	ErrLoginFailed:        "用户名或密码错误",
+	ErrOldPwdIncorrect:    "原密码错误",
+	ErrPwdSame:            "新密码不能与原密码相同",
 	ErrCategoryNotFound:   "分类不存在",
 	ErrCategoryInUse:      "分类被文章引用，禁止删除",
 	ErrArticleNotFound:    "文章不存在",

@@ -13,6 +13,12 @@ type LoginResp struct {
 	Token string `json:"token"`
 }
 
+// ChangePwdReq 自助修改密码请求
+type ChangePwdReq struct {
+	OldPassword string `json:"old_password" binding:"required"`
+	NewPassword string `json:"new_password" binding:"required,min=6,max=32"`
+}
+
 // UserInfoResp 用户信息响应
 type UserInfoResp struct {
 	User        UserDTO      `json:"user"`

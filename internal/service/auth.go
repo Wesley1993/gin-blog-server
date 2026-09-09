@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -92,6 +93,48 @@ func (s *AuthService) Login(req dto.LoginReq) (*dto.LoginResp, error) {
 func (s *AuthService) Logout(userID int64) error {
 	s.redis.Del(TokenKey(userID))
 	logger.Info("用户登出", "userID", userID)
+	return nil
+}
+
+// ChangePassword 当前登录用户自助修改密码
+func (s *AuthService) ChangePassword(userID int64, req dto.ChangePwdReq) error {
+	// 1. 查用户
+	user, err := s.userRepo.FindByID(userID)
+	if err != nil {
+		logger.Error("修改密码查询用户失败", "userID", userID, "error", err)
+		return fmt.Errorf("500")
+	}
+
+	// 2. bcrypt 校验原密码
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.OldPassword)); err != nil {
+		logger.Warn("修改密码失败，原密码错误", "userID", userID)
+		return fmt.Errorf("10006") // ErrOldPwdIncorrect
+	}
+
+	// 3. 新密码不能与原密码相同
+	if req.OldPassword == req.NewPassword {
+		return fmt.Errorf("10007") // ErrPwdSame
+	}
+
+	// 4. 加密新密码
+	hashed, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		logger.Error("修改密码加密失败", "userID", userID, "error", err)
+		return fmt.Errorf("500")
+	}
+
+	// 5. 落库：仅更新 password 与 update_time 两列，避免整行 Save 覆盖慢窗口内的并发修改
+	if err := s.db.Model(&model.User{}).Where("id = ?", userID).Updates(map[string]interface{}{
+		"password":    string(hashed),
+		"update_time": time.Now(),
+	}).Error; err != nil {
+		logger.Error("修改密码保存失败", "userID", userID, "error", err)
+		return fmt.Errorf("500")
+	}
+
+	// 6. 清除缓存，强制下线
+	ClearUserCache(s.redis, userID)
+	logger.Info("修改密码成功", "userID", userID)
 	return nil
 }
 

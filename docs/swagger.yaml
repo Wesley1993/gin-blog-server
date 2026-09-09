@@ -1,5 +1,17 @@
 basePath: /
 definitions:
+  dto.ChangePwdReq:
+    properties:
+      new_password:
+        maxLength: 32
+        minLength: 6
+        type: string
+      old_password:
+        type: string
+    required:
+    - new_password
+    - old_password
+    type: object
   dto.CreateArticleReq:
     properties:
       category_id:
@@ -7,6 +19,18 @@ definitions:
       content:
         type: string
       cover:
+        type: string
+      is_repost:
+        description: 0原创 1转载
+        type: integer
+      published_at:
+        description: 可选，格式 "2006-01-02 15:04:05"，未传则默认当前时间
+        type: string
+      repost_author:
+        description: 原作者
+        type: string
+      repost_url:
+        description: 原文链接（转载时必填）
         type: string
       status:
         type: integer
@@ -21,6 +45,8 @@ definitions:
     type: object
   dto.CreateCategoryReq:
     properties:
+      image:
+        type: string
       name:
         type: string
       parent_id:
@@ -31,6 +57,31 @@ definitions:
         type: integer
     required:
     - name
+    type: object
+  dto.CreateMenuReq:
+    properties:
+      menu_name:
+        type: string
+      menu_type:
+        description: 1目录 2页面 3按钮
+        enum:
+        - 1
+        - 2
+        - 3
+        type: integer
+      parent_id:
+        type: integer
+      path:
+        type: string
+      perms:
+        type: string
+      sort:
+        type: integer
+      status:
+        type: integer
+    required:
+    - menu_name
+    - menu_type
     type: object
   dto.CreateRoleReq:
     properties:
@@ -48,6 +99,24 @@ definitions:
         type: string
     required:
     - role_name
+    type: object
+  dto.CreateSiteLinkReq:
+    properties:
+      description:
+        type: string
+      icon:
+        type: string
+      name:
+        type: string
+      sort:
+        type: integer
+      status:
+        type: integer
+      url:
+        type: string
+    required:
+    - name
+    - url
     type: object
   dto.CreateUserReq:
     properties:
@@ -81,12 +150,163 @@ definitions:
       token:
         type: string
     type: object
+  dto.ProfileDTO:
+    properties:
+      avatar:
+        type: string
+      bio:
+        type: string
+      id:
+        type: integer
+      nickname:
+        type: string
+      role_id:
+        type: integer
+      username:
+        type: string
+    type: object
   dto.ResetPwdReq:
     properties:
       password:
         type: string
     required:
     - password
+    type: object
+  dto.SaveSiteProfileReq:
+    properties:
+      avatar:
+        type: string
+      bio:
+        type: string
+      contacts:
+        $ref: '#/definitions/dto.SiteProfileContact'
+      name:
+        type: string
+      projects:
+        items:
+          $ref: '#/definitions/dto.SiteProfileProject'
+        type: array
+      skills:
+        items:
+          $ref: '#/definitions/dto.SiteProfileSkill'
+        type: array
+      title:
+        type: string
+    type: object
+  dto.SiteLinkItem:
+    properties:
+      description:
+        type: string
+      icon:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      sort:
+        type: integer
+      url:
+        type: string
+    type: object
+  dto.SiteProfileContact:
+    properties:
+      address:
+        description: 地址
+        type: string
+      email:
+        description: 邮箱
+        type: string
+      github:
+        description: GitHub 地址
+        type: string
+      qq:
+        description: QQ 号
+        type: string
+      wechat:
+        description: 微信号
+        type: string
+    type: object
+  dto.SiteProfileProject:
+    properties:
+      desc:
+        description: 项目描述
+        type: string
+      end:
+        description: 结束时间，空表示至今
+        type: string
+      link:
+        description: 项目链接
+        type: string
+      name:
+        description: 项目名称
+        type: string
+      start:
+        description: 开始时间 如 2026-01
+        type: string
+      tech:
+        description: 技术栈
+        items:
+          type: string
+        type: array
+    type: object
+  dto.SiteProfileResp:
+    properties:
+      avatar:
+        description: 头像
+        type: string
+      bio:
+        description: 个人简历/自序
+        type: string
+      contacts:
+        allOf:
+        - $ref: '#/definitions/dto.SiteProfileContact'
+        description: 联系方式
+      name:
+        description: 站长姓名
+        type: string
+      projects:
+        description: 项目经历列表
+        items:
+          $ref: '#/definitions/dto.SiteProfileProject'
+        type: array
+      skills:
+        description: 技能列表
+        items:
+          $ref: '#/definitions/dto.SiteProfileSkill'
+        type: array
+      title:
+        description: 头衔/一句话介绍
+        type: string
+    type: object
+  dto.SiteProfileSkill:
+    properties:
+      group:
+        description: 分组（如 后端/前端/工程化）
+        type: string
+      level:
+        description: 熟练度 0-100
+        type: integer
+      name:
+        description: 技能名称
+        type: string
+    type: object
+  dto.SiteStatsResp:
+    properties:
+      article_count:
+        description: 文章总数（未删除）
+        type: integer
+      category_count:
+        description: 分类数
+        type: integer
+      founded_at:
+        description: 建站日期
+        type: string
+      running_days:
+        description: 运行天数
+        type: integer
+      user_count:
+        description: 用户数
+        type: integer
     type: object
   dto.UpdateArticleReq:
     properties:
@@ -98,6 +318,18 @@ definitions:
         type: string
       id:
         type: integer
+      is_repost:
+        description: 0原创 1转载
+        type: integer
+      published_at:
+        description: 可选，格式 "2006-01-02 15:04:05"，传了才更新
+        type: string
+      repost_author:
+        description: 原作者
+        type: string
+      repost_url:
+        description: 原文链接（转载时必填）
+        type: string
       status:
         type: integer
       tags:
@@ -114,6 +346,8 @@ definitions:
     properties:
       id:
         type: integer
+      image:
+        type: string
       name:
         type: string
       parent_id:
@@ -125,6 +359,36 @@ definitions:
     required:
     - id
     - name
+    type: object
+  dto.UpdateMenuReq:
+    properties:
+      id:
+        type: integer
+      menu_name:
+        type: string
+      menu_type:
+        type: integer
+      parent_id:
+        type: integer
+      path:
+        type: string
+      perms:
+        type: string
+      sort:
+        type: integer
+      status:
+        type: integer
+    required:
+    - id
+    type: object
+  dto.UpdateProfileReq:
+    properties:
+      avatar:
+        type: string
+      bio:
+        type: string
+      nickname:
+        type: string
     type: object
   dto.UpdateRoleReq:
     properties:
@@ -146,6 +410,24 @@ definitions:
     - id
     - role_name
     type: object
+  dto.UpdateSiteLinkReq:
+    properties:
+      description:
+        type: string
+      icon:
+        type: string
+      name:
+        type: string
+      sort:
+        type: integer
+      status:
+        type: integer
+      url:
+        type: string
+    required:
+    - name
+    - url
+    type: object
   dto.UpdateUserReq:
     properties:
       id:
@@ -159,8 +441,15 @@ definitions:
     required:
     - id
     type: object
+  dto.UpdateUserStatusReq:
+    properties:
+      status:
+        type: integer
+    type: object
   dto.UserDTO:
     properties:
+      avatar:
+        type: string
       id:
         type: integer
       nickname:
@@ -187,6 +476,10 @@ definitions:
     properties:
       copyright:
         type: string
+      founded_at:
+        type: string
+      icp:
+        type: string
       oss_access_key:
         type: string
       oss_bucket:
@@ -195,7 +488,15 @@ definitions:
         type: string
       oss_endpoint:
         type: string
+      oss_insecure:
+        type: integer
+      oss_provider:
+        type: string
+      oss_region:
+        type: string
       oss_secret_key:
+        type: string
+      police_icp:
         type: string
       site_desc:
         type: string
@@ -230,6 +531,33 @@ definitions:
       update_time:
         type: string
     type: object
+  model.SiteLink:
+    properties:
+      create_time:
+        type: string
+      description:
+        description: 可选描述
+        type: string
+      icon:
+        description: 图标图片 URL
+        type: string
+      id:
+        type: integer
+      name:
+        description: 网站名称
+        type: string
+      sort:
+        description: 排序，小靠前
+        type: integer
+      status:
+        description: 1 启用 0 停用
+        type: integer
+      update_time:
+        type: string
+      url:
+        description: 链接地址
+        type: string
+    type: object
   response.Response:
     properties:
       code:
@@ -239,6 +567,29 @@ definitions:
         description: 响应数据，无数据时为 null
       msg:
         description: 提示信息
+        type: string
+    type: object
+  service.SystemOverview:
+    properties:
+      app_mode:
+        type: string
+      app_name:
+        type: string
+      app_version:
+        type: string
+      db_status:
+        type: string
+      es_status:
+        type: string
+      go_version:
+        type: string
+      goroutines:
+        type: integer
+      mem_alloc_mb:
+        type: integer
+      redis_status:
+        type: string
+      uptime:
         type: string
     type: object
 host: localhost:3000
@@ -542,6 +893,49 @@ paths:
       summary: 更新分类
       tags:
       - 分类管理
+  /api/menu/{id}:
+    delete:
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除菜单
+      tags:
+      - RBAC权限
+  /api/menu/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 菜单信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateMenuReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建菜单
+      tags:
+      - RBAC权限
   /api/menu/list:
     get:
       produces:
@@ -556,6 +950,233 @@ paths:
       summary: 获取全部菜单树
       tags:
       - RBAC权限
+  /api/menu/update:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 菜单信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateMenuReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新菜单
+      tags:
+      - RBAC权限
+  /api/profile/info:
+    get:
+      description: 返回当前登录用户的昵称、头像、个人简介等信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ProfileDTO'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 获取个人信息
+      tags:
+      - 个人信息
+  /api/profile/update:
+    put:
+      consumes:
+      - application/json
+      description: 更新当前登录用户的昵称、头像、个人简介，更新后清除用户缓存
+      parameters:
+      - description: 个人信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateProfileReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ProfileDTO'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 更新个人信息
+      tags:
+      - 个人信息
+  /api/public/article/{id}:
+    get:
+      description: 博客前台公开接口，根据 ID 获取已发布文章详情（含 content）
+      parameters:
+      - description: 文章ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 前台文章详情（仅已发布）
+      tags:
+      - 博客公开接口
+  /api/public/article/dates:
+    get:
+      description: 博客前台公开接口，返回指定年月内有已发布文章的日期列表（YYYY-MM-DD）
+      parameters:
+      - description: 年份
+        in: query
+        name: year
+        required: true
+        type: integer
+      - description: 月份 1-12
+        in: query
+        name: month
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 前台文章发布日历（指定年月）
+      tags:
+      - 博客公开接口
+  /api/public/article/es/search:
+    get:
+      description: 博客前台公开接口，仅搜索已发布文章，ES 不可用时降级 PG LIKE
+      parameters:
+      - description: 搜索关键词
+        in: query
+        name: keyword
+        required: true
+        type: string
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页条数
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 前台ES全文搜索（仅已发布）
+      tags:
+      - 博客公开接口
+  /api/public/article/page:
+    get:
+      description: 博客前台公开接口，返回列表不包含 content 字段，节省带宽
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页条数
+        in: query
+        name: page_size
+        type: integer
+      - description: 分类ID
+        in: query
+        name: category_id
+        type: integer
+      - description: 发布日期（YYYY-MM-DD）
+        in: query
+        name: date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 前台文章分页列表（仅已发布）
+      tags:
+      - 博客公开接口
+  /api/public/links:
+    get:
+      description: 博客前台公开接口，仅返回启用中的记录，按 sort 升序、id 升序
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.SiteLinkItem'
+                  type: array
+              type: object
+      summary: 获取常用网站列表
+      tags:
+      - 博客公开接口
+  /api/public/profile:
+    get:
+      description: 博客前台公开接口，用于「关于页」与「联系站长」展示，表为空时返回空默认值
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.SiteProfileResp'
+              type: object
+      summary: 获取站长个人资料
+      tags:
+      - 博客公开接口
+  /api/public/site/config:
+    get:
+      description: 博客前台公开接口，仅返回 site_name、site_desc、copyright、founded_at、icp、police_icp
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 获取站点公开配置
+      tags:
+      - 博客公开接口
   /api/role/{id}:
     delete:
       parameters:
@@ -672,6 +1293,157 @@ paths:
       summary: 保存站点配置
       tags:
       - 站点管理
+  /api/site/links:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.SiteLink'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 获取全部常用网站
+      tags:
+      - 站点管理
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 常用网站信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateSiteLinkReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 新增常用网站
+      tags:
+      - 站点管理
+  /api/site/links/{id}:
+    delete:
+      parameters:
+      - description: 常用网站ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除常用网站
+      tags:
+      - 站点管理
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 常用网站ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 常用网站信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateSiteLinkReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新常用网站
+      tags:
+      - 站点管理
+  /api/site/profile:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.SiteProfileResp'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 获取站长个人资料
+      tags:
+      - 站点管理
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 站长个人资料
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SaveSiteProfileReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 保存站长个人资料
+      tags:
+      - 站点管理
+  /api/site/stats:
+    get:
+      description: 返回建站日期、运行天数、文章总数、分类数、用户数，运行天数由后端根据 founded_at 计算
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.SiteStatsResp'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 获取站点运行统计信息
+      tags:
+      - 站点管理
   /api/site/testOss:
     post:
       produces:
@@ -686,6 +1458,26 @@ paths:
       summary: OSS连通测试
       tags:
       - 站点管理
+  /api/system/overview:
+    get:
+      description: 返回应用版本、Go 运行时、内存、运行时长及 DB/Redis/ES 健康状态
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/service.SystemOverview'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 获取系统运行概览
+      tags:
+      - 系统管理
   /api/upload/oss:
     post:
       consumes:
@@ -776,6 +1568,30 @@ paths:
       summary: 用户分页列表
       tags:
       - 用户管理
+  /api/user/password:
+    put:
+      consumes:
+      - application/json
+      description: 校验原密码后修改当前登录用户密码，成功后强制下线
+      parameters:
+      - description: 修改密码参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ChangePwdReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 修改密码
+      tags:
+      - 认证
   /api/user/resetPwd/{id}:
     put:
       consumes:
@@ -802,6 +1618,34 @@ paths:
       security:
       - BearerAuth: []
       summary: 重置密码
+      tags:
+      - 用户管理
+  /api/user/status/{id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 目标状态
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateUserStatusReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 启停用用户
       tags:
       - 用户管理
   /api/user/update:

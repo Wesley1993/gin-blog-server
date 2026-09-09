@@ -25,6 +25,7 @@ config/config.yaml
 *.swp
 *.swo
 .DS_Store
+.qoder
 
 # Screenshots (project root level, not in docs/)
 /*.png

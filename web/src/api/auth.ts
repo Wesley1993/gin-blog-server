@@ -21,3 +21,13 @@ export function logout() {
 export function getUserInfo() {
   return request.get<unknown, ApiResponse<UserInfoResp>>('/auth/userinfo');
 }
+
+export interface ChangePwdParams {
+  old_password: string;
+  new_password: string;
+}
+
+/** 修改当前登录用户密码（成功后后端会删除 token 强制下线） */
+export function changePassword(data: ChangePwdParams) {
+  return request.put<unknown, ApiResponse<null>>('/user/password', data);
+}
