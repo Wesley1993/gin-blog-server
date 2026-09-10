@@ -1205,60 +1205,6 @@ a {
   animation: rise 0.6s ease 0.15s both;
 }
 
-/* markdown 预览容器融入纸面 */
-.article-body .wmde-markdown {
-  background: transparent !important;
-  color: var(--ink);
-  font-family: var(--font-serif);
-  font-size: 16.5px;
-  line-height: 2;
-}
-
-.article-body .wmde-markdown h1,
-.article-body .wmde-markdown h2,
-.article-body .wmde-markdown h3,
-.article-body .wmde-markdown h4 {
-  font-family: var(--font-serif);
-  color: var(--ink);
-  border-bottom: none;
-  letter-spacing: 0.05em;
-}
-
-.article-body .wmde-markdown h2 {
-  position: relative;
-  padding-left: 18px;
-}
-
-.article-body .wmde-markdown h2::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.35em;
-  width: 6px;
-  height: 1.1em;
-  background: var(--vermilion);
-}
-
-.article-body .wmde-markdown a {
-  color: var(--vermilion-deep);
-}
-
-.article-body .wmde-markdown code {
-  font-family: var(--font-mono);
-  font-size: 13.5px;
-}
-
-.article-body .wmde-markdown pre {
-  background: #26221d !important;
-  border: 1px solid var(--line);
-}
-
-.article-body .wmde-markdown blockquote {
-  border-left: 3px solid var(--vermilion);
-  color: var(--ink-soft);
-  background: rgba(196, 58, 33, 0.04);
-}
-
 .article-tags {
   max-width: 800px;
   margin: 54px auto 0;

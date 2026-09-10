@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Result, Spin } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import MarkdownPreview from '@uiw/react-markdown-preview';
+import MarkdownView from '../components/MarkdownView';
 import { getArticleDetail, getArticles, getCategories } from '../api/blog';
 import type { Article, Category } from '../api/blog';
 
@@ -192,8 +192,8 @@ export default function ArticleDetail() {
         )}
       </header>
 
-      <div className="article-body" data-color-mode="light">
-        <MarkdownPreview source={article.content || ''} />
+      <div className="article-body">
+        <MarkdownView content={article.content || ''} />
       </div>
 
       {tags.length > 0 && (

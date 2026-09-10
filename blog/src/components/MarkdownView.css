@@ -1,0 +1,81 @@
+/* ===== MarkdownView 组件样式：正文排版融入纸面 ===== */
+
+.markdown-view .x-markdown {
+  background: transparent !important;
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 16.5px;
+  line-height: 2;
+}
+
+.markdown-view .x-markdown h1,
+.markdown-view .x-markdown h2,
+.markdown-view .x-markdown h3,
+.markdown-view .x-markdown h4 {
+  font-family: var(--font-serif);
+  color: var(--ink);
+  border-bottom: none;
+  letter-spacing: 0.05em;
+}
+
+.markdown-view .x-markdown h2 {
+  position: relative;
+  padding-left: 18px;
+}
+
+.markdown-view .x-markdown h2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.35em;
+  width: 6px;
+  height: 1.1em;
+  background: var(--vermilion);
+}
+
+.markdown-view .x-markdown a {
+  color: var(--vermilion-deep);
+}
+
+.markdown-view .x-markdown :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+}
+
+.markdown-view .x-markdown pre {
+  /*background: #26221d !important;*/
+  border: 1px solid var(--line);
+}
+
+.markdown-view .x-markdown blockquote {
+  border-left: 3px solid var(--vermilion);
+  color: var(--ink-soft);
+  background: rgba(196, 58, 33, 0.04);
+}
+
+/* mermaid 图表：外层 pre 去除代码块默认样式，图表容器卡片化 */
+.markdown-view .x-markdown pre:has(.ant-mermaid),
+.markdown-view .x-markdown pre:has(.ant-code-highlighter) {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.markdown-view .ant-mermaid {
+  margin: 1em 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fdfbf5;
+  overflow: hidden;
+}
+
+/* 代码高亮容器卡片化 */
+.markdown-view .ant-code-highlighter {
+  margin: 1em 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fdfbf5;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+}
