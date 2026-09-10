@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Result, Spin } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import MarkdownView from '../components/MarkdownView';
+import TocSidebar from '../components/TocSidebar';
+import { extractHeadings } from '../utils/markdown';
 import { getArticleDetail, getArticles, getCategories } from '../api/blog';
 import type { Article, Category } from '../api/blog';
 
@@ -126,6 +128,10 @@ export default function ArticleDetail() {
   const tags = article?.tags
     ? article.tags.split(',').map((t) => t.trim()).filter(Boolean)
     : [];
+  const headings = useMemo(
+    () => extractHeadings(article?.content || ''),
+    [article?.content],
+  );
 
   if (loading) {
     return (
@@ -192,8 +198,11 @@ export default function ArticleDetail() {
         )}
       </header>
 
-      <div className="article-body">
-        <MarkdownView content={article.content || ''} />
+      <div className="article-content">
+        <div className="article-body">
+          <MarkdownView content={article.content || ''} headings={headings} />
+        </div>
+        <TocSidebar headings={headings} />
       </div>
 
       {tags.length > 0 && (
