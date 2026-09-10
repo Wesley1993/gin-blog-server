@@ -66,7 +66,15 @@
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fdfbf5;
-  overflow: hidden;
+  overflow: auto;
+}
+
+/* mermaid 图表内部 graph 区域支持滚动 */
+.markdown-view .ant-mermaid-graph {
+  overflow: auto;
+  height: auto!important;
+  max-height: 700px;
+  min-height: 400px;
 }
 
 /* 代码高亮容器卡片化 */
