@@ -68,6 +68,11 @@ export function deleteArticle(id: number) {
   return request.delete<unknown, ApiResponse<null>>(`/article/${id}`);
 }
 
+/** 一键发布草稿 */
+export function publishArticle(id: number) {
+  return request.patch<unknown, ApiResponse<null>>(`/article/publish/${id}`);
+}
+
 /** 手动重建 ES 全量索引（超管） */
 export function rebuildIndex() {
   return request.post<unknown, ApiResponse<null>>('/article/es/rebuild');

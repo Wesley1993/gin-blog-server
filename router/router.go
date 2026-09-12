@@ -26,6 +26,7 @@ var writePermTable = map[string]string{
 	"POST /api/article/create":     "article:add",
 	"PUT /api/article/update":      "article:edit",
 	"DELETE /api/article/:id":      "article:delete",
+	"PATCH /api/article/publish/:id": "article:edit",
 	"POST /api/article/es/rebuild": "article:rebuild",
 	// 分类管理
 	"POST /api/category/create": "category:add",
@@ -193,6 +194,7 @@ func SetupRouter(
 				article.POST("/create", articleHandler.Create)
 				article.PUT("/update", articleHandler.Update)
 				article.DELETE("/:id", articleHandler.Delete)
+				article.PATCH("/publish/:id", articleHandler.Publish)
 				article.POST("/es/rebuild", articleHandler.RebuildIndex)
 			}
 

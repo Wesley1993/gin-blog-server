@@ -9,10 +9,11 @@ import {
   Popconfirm,
   Card,
   Image,
+  Tooltip,
   App as AntApp,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { PlusOutlined, ThunderboltOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined, ThunderboltOutlined, EditOutlined, SendOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import PageHeader from '../../components/PageHeader';
@@ -20,6 +21,7 @@ import {
   getArticlePage,
   searchArticle,
   deleteArticle,
+  publishArticle,
   rebuildIndex,
 } from '../../api/article';
 import { getCategoryTree } from '../../api/category';
@@ -95,6 +97,16 @@ export default function ArticlePage() {
     try {
       await deleteArticle(record.id);
       message.success('文章已删除');
+      fetchList();
+    } catch {
+      /* 拦截器已提示 */
+    }
+  };
+
+  const handlePublish = async (record: ArticleItem) => {
+    try {
+      await publishArticle(record.id);
+      message.success('文章已发布');
       fetchList();
     } catch {
       /* 拦截器已提示 */
@@ -184,23 +196,31 @@ export default function ArticlePage() {
   if (canEdit || canDelete) {
     columns.push({
       title: '操作',
-      width: 150,
+      width: 120,
       render: (_, record) => (
         <Space size="small">
+          {canEdit && record.status === 0 && (
+            <Popconfirm title="确认发布该文章？" onConfirm={() => handlePublish(record)}>
+              <Tooltip title="发布">
+                <Button size="small" type="text" icon={<SendOutlined />} style={{ color: '#1677ff' }} />
+              </Tooltip>
+            </Popconfirm>
+          )}
           {canEdit && (
-            <Button
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() => navigate(`/article/edit/${record.id}`)}
-            >
-              编辑
-            </Button>
+            <Tooltip title="编辑">
+              <Button
+                size="small"
+                type="text"
+                icon={<EditOutlined />}
+                onClick={() => navigate(`/article/edit/${record.id}`)}
+              />
+            </Tooltip>
           )}
           {canDelete && (
             <Popconfirm title="确认删除该文章？" onConfirm={() => handleDelete(record)}>
-              <Button size="small" danger>
-                删除
-              </Button>
+              <Tooltip title="删除">
+                <Button size="small" type="text" danger icon={<DeleteOutlined />} />
+              </Tooltip>
             </Popconfirm>
           )}
         </Space>

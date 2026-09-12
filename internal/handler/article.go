@@ -155,6 +155,34 @@ func (h *ArticleHandler) Delete(c *gin.Context) {
 	response.Success(c)
 }
 
+// Publish 一键发布草稿
+// @Summary 一键发布草稿
+// @Description 将草稿文章状态改为已发布，设置发布时间
+// @Tags 文章管理
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "文章ID"
+// @Success 200 {object} response.Response
+// @Router /api/article/publish/:id [patch]
+func (h *ArticleHandler) Publish(c *gin.Context) {
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		response.Fail(c, http.StatusOK, pkgerrors.CodeBadRequest, "参数错误")
+		return
+	}
+
+	if err := h.articleService.Publish(id); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			response.Fail(c, http.StatusOK, pkgerrors.ErrArticleNotFound, pkgerrors.GetMsg(pkgerrors.ErrArticleNotFound))
+			return
+		}
+		response.Fail(c, http.StatusOK, pkgerrors.CodeServerError, err.Error())
+		return
+	}
+
+	response.Success(c)
+}
+
 // SearchArticle ES 全文搜索（降级 PG LIKE）
 // @Summary ES全文搜索文章
 // @Tags 文章管理

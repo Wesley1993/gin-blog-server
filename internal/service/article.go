@@ -229,6 +229,43 @@ func (s *ArticleService) RebuildIndex() (success, failed int, err error) {
 	return s.esClient.RebuildIndex(articles)
 }
 
+// Publish 一键发布草稿：将 status 从 0 改为 1，设置 published_at，同步 ES
+func (s *ArticleService) Publish(id int64) error {
+	article, err := s.Repo.FindByID(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			logger.Warn("发布文章拒绝，文章不存在", "articleID", id)
+			return errors.New(pkgerrors.GetMsg(pkgerrors.ErrArticleNotFound))
+		}
+		logger.Error("发布文章查询失败", "articleID", id, "error", err)
+		return err
+	}
+
+	if article.Status == 1 {
+		return errors.New("该文章已发布，无需重复操作")
+	}
+
+	now := time.Now()
+	article.Status = 1
+	article.PublishedAt = &now
+	article.UpdateTime = now
+
+	if err := s.Repo.Update(article); err != nil {
+		logger.Error("发布文章失败", "articleID", id, "error", err)
+		return err
+	}
+
+	// ES 同步
+	if s.esClient != nil {
+		if syncErr := s.esClient.SyncArticle(article); syncErr != nil {
+			logger.Error("发布后ES同步失败", "articleID", id, "error", syncErr)
+		}
+	}
+
+	logger.Info("文章发布成功", "articleID", id, "title", article.Title)
+	return nil
+}
+
 // parseTime 解析 ES 返回的时间字符串
 func parseTime(s string) time.Time {
 	t, _ := time.Parse("2006-01-02 15:04:05", s)
