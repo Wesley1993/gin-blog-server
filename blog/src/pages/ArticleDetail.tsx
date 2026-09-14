@@ -4,6 +4,7 @@ import { Result, Spin } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import MarkdownView from '../components/MarkdownView';
 import TocSidebar from '../components/TocSidebar';
+import BackToTop from '../components/BackToTop';
 import { extractHeadings } from '../utils/markdown';
 import { getArticleDetail, getArticles, getCategories } from '../api/blog';
 import type { Article, Category } from '../api/blog';
@@ -239,6 +240,8 @@ export default function ArticleDetail() {
           {nextArticle && <span className="nav-date mono">{formatDate(nextArticle.published_at || nextArticle.create_time)}</span>}
         </div>
       </nav>
+
+      <BackToTop />
     </div>
   );
 }
