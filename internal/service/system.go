@@ -142,7 +142,7 @@ func (s *SystemService) probeRedis() string {
 	return "healthy"
 }
 
-// checkES 通过 Info 接口检测 Elasticsearch 健康状态
+// checkES 检测 Elasticsearch 服务是否可达
 func (s *SystemService) checkES() string {
 	status := s.probeES()
 	s.reportHealth("es", status)
@@ -150,12 +150,12 @@ func (s *SystemService) checkES() string {
 }
 
 func (s *SystemService) probeES() string {
-	if s.esClient == nil {
+	if s.esClient == nil || s.esClient.Client == nil {
 		return "not_configured"
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), healthCheckTimeout)
 	defer cancel()
-	res, err := s.esClient.Client.Info(s.esClient.Client.Info.WithContext(ctx))
+	res, err := s.esClient.Client.Ping(s.esClient.Client.Ping.WithContext(ctx))
 	if err != nil {
 		return "unhealthy"
 	}

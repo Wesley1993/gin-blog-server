@@ -18,6 +18,8 @@ import {
 } from 'antd';
 import type { UploadFile } from 'antd';
 import {
+  ArrowDownOutlined,
+  ArrowUpOutlined,
   CameraOutlined,
   DeleteOutlined,
   PlusOutlined,
@@ -295,7 +297,7 @@ export default function SiteProfilePage() {
             {/* 项目经历 */}
             <Card variant="borderless" title="项目经历">
               <Form.List name="projects">
-                {(fields, { add, remove }) => (
+                {(fields, { add, remove, move }) => (
                   <>
                     {fields.map(({ key, name, ...rest }) => (
                       <div
@@ -306,15 +308,36 @@ export default function SiteProfilePage() {
                           <span className="text-xs tracking-[0.15em] text-[#8a7f6f] uppercase">
                             项目 #{name + 1}
                           </span>
-                          <Button
-                            type="text"
-                            danger
-                            size="small"
-                            icon={<DeleteOutlined />}
-                            onClick={() => remove(name)}
-                          >
-                            删除
-                          </Button>
+                          <Space size="small">
+                            <Button
+                              type="text"
+                              size="small"
+                              icon={<ArrowUpOutlined />}
+                              aria-label={`项目 #${name + 1} 上移`}
+                              title="上移"
+                              disabled={!canEditProfile || name === 0}
+                              onClick={() => move(name, name - 1)}
+                            />
+                            <Button
+                              type="text"
+                              size="small"
+                              icon={<ArrowDownOutlined />}
+                              aria-label={`项目 #${name + 1} 下移`}
+                              title="下移"
+                              disabled={!canEditProfile || name === fields.length - 1}
+                              onClick={() => move(name, name + 1)}
+                            />
+                            <Button
+                              type="text"
+                              danger
+                              size="small"
+                              icon={<DeleteOutlined />}
+                              disabled={!canEditProfile}
+                              onClick={() => remove(name)}
+                            >
+                              删除
+                            </Button>
+                          </Space>
                         </div>
                         <Row gutter={16}>
                           <Col xs={24} sm={12}>
@@ -374,6 +397,7 @@ export default function SiteProfilePage() {
                       type="dashed"
                       block
                       icon={<PlusOutlined />}
+                      disabled={!canEditProfile}
                       onClick={() => add({ tech: [] })}
                     >
                       添加项目

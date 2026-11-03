@@ -43,14 +43,20 @@ func NewESClient(cfg *config.ESConfig) (*ESClient, error) {
 
 // CheckAndInit 启动时检查 ES 连通性、IK 分词器、索引存在性
 func (es *ESClient) CheckAndInit(ctx context.Context) {
-	// 1. Ping ES
-	res, err := es.Client.Info()
+	// 1. 检查 ES 服务和协议标识。go-elasticsearch v8 会校验
+	// X-Elastic-Product: Elasticsearch，避免把代理错误页或不兼容服务当成 ES。
+	res, err := es.Client.Info(es.Client.Info.WithContext(ctx))
 	if err != nil {
-		logger.Warn("ES连接失败，搜索将降级到PG", "error", err)
+		logger.Warn("ES探测失败，搜索将降级到PG；请检查地址是否指向 Elasticsearch 且代理保留 X-Elastic-Product 响应头", "error", err)
 		es.Available = false
 		return
 	}
 	res.Body.Close()
+	if res.IsError() {
+		logger.Warn("ES探测返回错误，搜索将降级到PG", "status", res.Status())
+		es.Available = false
+		return
+	}
 
 	// 2. 检查 IK 分词器
 	if !es.checkIKAnalyzer(ctx) {
